@@ -24,46 +24,26 @@
     loop:
         - { path: /var/www/static, state: directory, owner: root, mode: '0777'} 
         - { path: /var/www/dynamic, state: directory , owner: root, mode: '0777' }
-        - { path : /var/www/static/index.html , state: touch , owner: root, mode: '0777'}
-        - { path : /var/www/dynamic/index.php ,state: touch , owner: root, mode: '0777'}
-        - { path: /etc/apache2/sites-available/static.conf, state: touch , owner: root, mode: '0777'}
-        - { path: /etc/apache2/sites-available/dynamic.conf, state: touch , owner: root, mode: '0777'}
+  - name : Add templaytes
+    become : true
+    template:
+      src: "files/{{item.file}}"
+      dest : "{{item.dest}}"
+    loop:
+      - {file : index.html, dest: /var/www/static/}
+      - {file : index.php, dest: /var/www/dynamic/}
+      - {file : static.conf, dest: /etc/apache2/sites-available/}
+      - {file : dynamic.conf, dest: /etc/apache2/sites-available/}
 
   - name: Inser configurations and pages content
     become : true
     ansible.builtin.blockinfile  :
-      path    : "{{ item.path }}"
-      block  : "{{ item.line }}"
-    loop:
-      - { path: /var/www/static/index.html, line : "Hello world!" }
-      - { path: /var/www/dynamic/index.php, line : "<?php phpinfo(); ?>" }
-      - { path: /etc/apache2/sites-available/static.conf, line : "{{ firsthost }}"}
-      - { path: /etc/apache2/sites-available/dynamic.conf, line : "{{ secondhost }}"}
-      - { path: /etc/apache2/ports.conf, line : "{{ mainports }}"}
+      path   :  /etc/apache2/ports.conf 
+      block  : "{{ mainports }}"
     vars:
-      firsthost: |
-        <VirtualHost *:8080>
-        DocumentRoot /var/www/static
-        ServerName localhost
-        <Directory /var/www/static>
-        Options FollowSymlinks
-        AllowOverride All
-        Require all granted
-        </Directory>
-        </VirtualHost>
-      secondhost: |
-        <VirtualHost *:8081>
-        DocumentRoot /var/www/dynamic
-        ServerName localhost
-        <Directory /var/www/dynamic>
-        Options FollowSymlinks
-        AllowOverride All
-        Require all granted
-        </Directory>
-        </VirtualHost>
-      mainports: |
-        Listen 8080
-        Listen 8081              
+        mainports: |
+          Listen 8080
+          Listen 8081  
 
   - name: Apply configs
     become : true
