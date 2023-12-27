@@ -46,7 +46,6 @@ echo "<VirtualHost *:8081>
 sudo a2ensite firstindex.conf
 sudo a2ensite secondindex.conf
 sudo a2dissite 000-default.conf 
-sudo echo "AddType application/x-httpd-php .php" >> /etc/apache2/apache2.conf
 
 sudo echo "
 Listen 80
