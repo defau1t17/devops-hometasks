@@ -1,3 +1,5 @@
+sudo apt-get update -y
+
 sudo apt install apache2 -y
  
 sudo apt install php -y
@@ -5,9 +7,9 @@ sudo apt install php -y
 sudo mkdir /var/www/default
 sudo mkdir /var/www/php
 
-echo "hello from static page" > /var/www/default/index.html
+sudo echo "hello from static page" > /var/www/default/index.html
 
-echo "<html>
+sudo echo '<html>
   <head>
     <title>Site is running PHP version <?= phpversion(); ?></title>
   </head>
@@ -19,7 +21,8 @@ echo "<html>
       }
     ?>
   </body>
-</html>" > /var/www/php/index.php
+</html>' > /var/www/php/index.php
+
   
  echo "<VirtualHost *:8080>
      DocumentRoot /var/www/default
@@ -36,17 +39,19 @@ echo "<VirtualHost *:8081>
      <Directory /var/www/php>
           Options FollowSymlinks
           AllowOverride All
+          Require all granted
      </Directory>
     </VirtualHost>" > /etc/apache2/sites-available/secondindex.conf
 
 sudo a2ensite firstindex.conf
 sudo a2ensite secondindex.conf
-
+sudo a2dissite 000-default.conf 
+sudo echo "AddType application/x-httpd-php .php" >> /etc/apache2/apache2.conf
 
 sudo echo "
 Listen 80
 Listen 8080
 Listen 8081
-" >> /etc/apache2/ports.conf
+" > /etc/apache2/ports.conf
 
 sudo systemctl restart apache2.service

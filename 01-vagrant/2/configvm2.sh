@@ -5,7 +5,7 @@ sudo apt install php -y
 
 sudo mkdir /var/www/php
 
-echo "<html>
+sudo echo '<html>
   <head>
     <title>Site is running PHP version <?= phpversion(); ?></title>
   </head>
@@ -17,7 +17,7 @@ echo "<html>
       }
     ?>
   </body>
-</html>" > /var/www/php/index.php
+</html>' > /var/www/php/index.php
 
 echo "<VirtualHost 192.168.60.10:80>
      DocumentRoot /var/www/php

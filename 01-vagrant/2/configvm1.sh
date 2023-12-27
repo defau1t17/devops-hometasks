@@ -4,9 +4,9 @@ sudo apt install apache2 -y
 
 sudo mkdir /var/www/default
 
-echo "hello from static page" > /var/www/default/index.html
+sudo echo "hello from static page" > /var/www/default/index.html
 
- echo "<VirtualHost 192.168.10.193:80>
+sudo echo "<VirtualHost 192.168.10.193:80>
      DocumentRoot /var/www/default
      <Directory /var/www/default>
           Options FollowSymlinks
