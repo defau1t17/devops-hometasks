@@ -10,7 +10,7 @@ server {
 
 server {
     listen 80;
-    server_name proxy.static.com;
+    server_name proxy.static.com;   
      location / {
         proxy_pass http://192.168.56.10:80;
        proxy_set_header Host $host;
