@@ -19,7 +19,7 @@ sudo echo '<html>
   </body>
 </html>' > /var/www/php/index.php
 
-echo "<VirtualHost 192.168.60.10:80>
+echo "<VirtualHost 192.168.10.194:80>
      DocumentRoot /var/www/php
      <Directory /var/www/php>
           Options FollowSymlinks

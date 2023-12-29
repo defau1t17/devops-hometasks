@@ -8,7 +8,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.define "second" do |second|
     second.vm.box = "generic/debian11"
-    second.vm.network "private_network", ip: "192.168.60.10"
+    second.vm.network "private_network", ip: "192.168.10.194"
     second.vm.provision "shell", path: "configvm2.sh"
   end
 
