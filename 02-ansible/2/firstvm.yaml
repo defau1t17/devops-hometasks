@@ -1,0 +1,33 @@
+- name: First VM
+  hosts: firstvm
+  become: true
+  
+  tasks:
+  - name: Install Apache
+    apt:
+      name: apache2
+  
+  - name: Add config file
+    template:
+      src : "files/static.conf"
+      dest: "/etc/apache2/sites-available/" 
+      mode: '0777'
+  
+  - name: Config directory
+    file:
+      path  : /var/www/static
+      mode  : '0777'
+      state : directory
+
+  - name: insert file      
+    template:
+      src : "files/index.html"
+      dest: "/var/www/static/" 
+      mode: '0777'
+  
+  - name: Update Apache configures
+    shell: "{{ item }}"
+    loop:
+      - sudo a2ensite static.conf 
+      - sudo a2dissite 000-default.conf
+      - sudo systemctl restart apache2.service

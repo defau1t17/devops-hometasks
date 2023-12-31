@@ -1,0 +1,7 @@
+- name: All Hosts Playbook
+  hosts: vmgroup
+  tasks:
+  
+  - name: Update all VM's
+    become: true
+    shell: sudo apt-get update -y 

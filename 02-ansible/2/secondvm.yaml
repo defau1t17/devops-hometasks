@@ -1,0 +1,35 @@
+- name: Second VM
+  hosts: secondvm
+  become: true
+  tasks:
+  - name: Install Apache & PHP
+    apt:
+      name: "{{ item }}"
+    loop:
+      - apache2
+      - php
+  
+  - name: Add config file
+    template:
+      src : "files/dynamic.conf"
+      dest: "/etc/apache2/sites-available/" 
+      mode: '0777'
+  
+  - name: Config /var/www/... directory
+    file:
+      path  : /var/www/dynamic
+      mode  : '0777'
+      state : directory
+  
+  - name: insert file      
+    template:
+      src : "files/index.php"
+      dest: "/var/www/dynamic/" 
+      mode: '0777'
+  
+  - name: Update Apache configures
+    shell: "{{ item }}"
+    loop:
+      - sudo a2ensite dynamic.conf 
+      - sudo a2dissite 000-default.conf
+      - sudo systemctl restart apache2.service

@@ -1,39 +1,41 @@
 Vagrant.configure("2") do |config|
   config.vm.box = "generic/debian11"
+
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "allvms.yaml"
+  end
   
   config.vm.define "firstvm" do |firstvm|
     firstvm.vm.network "private_network", ip: "192.168.56.10"
     firstvm.vm.provision "shell", inline: <<-SHELL
-    sed -i "s/^#force_color_prompt=yes\$/force_color_prompt=yes/g" /home/vagrant/.bashrc
-    sed -i "s/^#alias ll='ls -l'\$/alias ll='ls -la'/g" /home/vagrant/.bashrc
     sed -i "s/^PasswordAuthentication no\$/PasswordAuthentication yes/g" /etc/ssh/sshd_config
     service sshd restart
     SHELL
+    firstvm.vm.provision "ansible" do |ansible|
+      ansible.playbook = "firstvm.yaml"
+    end
   end
 
   config.vm.define "secondvm" do |secondvm|
     secondvm.vm.network "private_network", ip: "192.168.56.11"
     secondvm.vm.provision "shell", inline: <<-SHELL
-    sed -i "s/^#force_color_prompt=yes\$/force_color_prompt=yes/g" /home/vagrant/.bashrc
-    sed -i "s/^#alias ll='ls -l'\$/alias ll='ls -la'/g" /home/vagrant/.bashrc
     sed -i "s/^PasswordAuthentication no\$/PasswordAuthentication yes/g" /etc/ssh/sshd_config
     service sshd restart
     SHELL
+    secondvm.vm.provision "ansible" do |ansible|
+      ansible.playbook = "secondvm.yaml"
+    end
   end
 
   config.vm.define "proxy" do |proxy|
     proxy.vm.network "private_network", ip: "192.168.56.12"
     proxy.vm.provision "shell", inline: <<-SHELL
-    sed -i "s/^#force_color_prompt=yes\$/force_color_prompt=yes/g" /home/vagrant/.bashrc
-    sed -i "s/^#alias ll='ls -l'\$/alias ll='ls -la'/g" /home/vagrant/.bashrc
     sed -i "s/^PasswordAuthentication no\$/PasswordAuthentication yes/g" /etc/ssh/sshd_config
     service sshd restart
     SHELL
+    proxy.vm.provision "ansible" do |ansible|
+      ansible.playbook = "proxyvm.yaml"
+    end
   end
-
-  config.vm.provision "ansible" do |ansible|
-    ansible.playbook = "playbook.yaml"
-  end
-
 
 end
