@@ -7,10 +7,10 @@ Vagrant.configure("2") do |config|
   
   config.vm.define "firstvm" do |firstvm|
     firstvm.vm.network "private_network", ip: "192.168.56.10"
-    firstvm.vm.provision "shell", inline: <<-SHELL
-    sed -i "s/^PasswordAuthentication no\$/PasswordAuthentication yes/g" /etc/ssh/sshd_config
-    service sshd restart
-    SHELL
+    # firstvm.vm.provision "shell", inline: <<-SHELL
+    # sed -i "s/^PasswordAuthentication no\$/PasswordAuthentication yes/g" /etc/ssh/sshd_config
+    # service sshd restart
+    # SHELL
     firstvm.vm.provision "ansible" do |ansible|
       ansible.playbook = "firstvm.yaml"
     end
@@ -18,10 +18,10 @@ Vagrant.configure("2") do |config|
 
   config.vm.define "secondvm" do |secondvm|
     secondvm.vm.network "private_network", ip: "192.168.56.11"
-    secondvm.vm.provision "shell", inline: <<-SHELL
-    sed -i "s/^PasswordAuthentication no\$/PasswordAuthentication yes/g" /etc/ssh/sshd_config
-    service sshd restart
-    SHELL
+ # firstvm.vm.provision "shell", inline: <<-SHELL
+    # sed -i "s/^PasswordAuthentication no\$/PasswordAuthentication yes/g" /etc/ssh/sshd_config
+    # service sshd restart
+    # SHELL
     secondvm.vm.provision "ansible" do |ansible|
       ansible.playbook = "secondvm.yaml"
     end
@@ -29,10 +29,9 @@ Vagrant.configure("2") do |config|
 
   config.vm.define "proxy" do |proxy|
     proxy.vm.network "private_network", ip: "192.168.56.12"
-    proxy.vm.provision "shell", inline: <<-SHELL
-    sed -i "s/^PasswordAuthentication no\$/PasswordAuthentication yes/g" /etc/ssh/sshd_config
-    service sshd restart
-    SHELL
+   # firstvm.vm.provision "shell", inline: <<-SHELL
+    # sed -i "s/^PasswordAuthentication no\$/PasswordAuthentication yes/g" /etc/ssh/sshd_config
+    # service sshd restart
     proxy.vm.provision "ansible" do |ansible|
       ansible.playbook = "proxyvm.yaml"
     end
