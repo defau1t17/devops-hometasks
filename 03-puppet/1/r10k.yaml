@@ -1,0 +1,6 @@
+:cachedir: '/var/cache/r10k'
+
+:sources:
+    :git:
+        :remote: 'https://github.com/defau1t17/puppet_labs.git'
+        :basedir: '/etc/puppetlabs/code/environments/production/manifests'

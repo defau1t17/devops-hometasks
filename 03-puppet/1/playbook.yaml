@@ -1,0 +1,167 @@
+---
+- name : Update all VM's
+  hosts: all
+  become: true
+  tasks:
+
+  - name: Config hosts file 
+    blockinfile:
+      path  : /etc/hosts
+      block : "192.168.56.10 master.puppet"
+
+  - name: Download Puppet Repository
+    yum:
+      name: https://yum.puppet.com/puppet7-release-el-8.noarch.rpm
+      state: present
+      disable_gpg_check: true      
+
+  - name: Stop the firewall service
+    service: 
+      name: firewalld
+      state: stopped
+      
+- name: Configure master VM
+  hosts: master
+  become: true
+  tasks:
+
+  - name: Install puppetserver & git
+    yum:
+      name: "{{ item }}"  
+    loop:
+      - git
+      - puppetserver
+  
+  - name: Edit JAVA_ARGS values in puppet config file
+    replace:
+      path: /etc/sysconfig/puppetserver
+      regexp: "{{ item.regexp }}"
+      replace: "{{ item.replace }}"
+    loop:
+        - {regexp  : '-Xms(\d+)g',  replace : '-Xms256m'}
+        - {regexp  : '-Xmx(\d+)g',  replace : '-Xmx256m'}
+
+  - name: Start puppetserver 
+    service:
+      name: puppetserver
+      state: started
+
+  - name: Enable puppetserver 
+    service:
+      name: puppetserver
+      enabled: true
+  
+  - name: Edit puppet config file
+    blockinfile:
+      path  : /etc/puppetlabs/puppet/puppet.conf
+      block : "{{ agent }}"
+    vars:
+      - agent: |
+          [agent]
+          server = master.puppet
+    
+  - name: install r10k 
+    shell: /opt/puppetlabs/puppet/bin/gem install r10k -v 3.6.0
+
+  - name: Insert r10k config file
+    file:
+      path: /etc/puppetlabs/r10k
+      state: directory
+
+  - name: Insert r10k & autosigh configs 
+    template:
+      dest: "{{ item.dest }}"
+      src : "{{ item.src }}"
+    loop:
+      - {dest: "/etc/puppetlabs/r10k", src : 'r10k.yaml'}
+      - {dest: "/etc/puppetlabs/puppet", src : 'autosign.conf'}
+
+  - name : Restart puppet server
+    service:
+      name: puppetserver
+      state: restarted  
+
+  - name: Pull information from GitHub
+    shell: /opt/puppetlabs/puppet/bin/r10k deploy environment 
+
+- name: Configure slaves VM's
+  hosts: slaves
+  become: true
+  tasks:
+
+  - name: Install puppet-agent & nginx & php
+    yum:
+      name: "{{ item }}"
+      state: latest
+    loop:
+      - puppet-agent
+      - nginx
+      - php
+  
+  - name: Insert masters IP in hosts
+    blockinfile:
+      path   :  "/etc/puppetlabs/puppet/puppet.conf"
+      block  : "{{ agent }}"
+    vars:
+      - agent: |
+           [agent]
+           server = master.puppet
+           runinterval = 1m
+           environment = production
+  
+  - name: Start puppet agent & nginx & stop firewalld
+    service:
+      name  : "{{ item.name }}"
+      state : "{{ item.state }}"
+    loop:
+      - {name: puppet, state: started}
+      - {name: nginx, state: started}
+    
+  
+  - name: Enable puppet agent
+    service:
+      name: "{{ item }}"
+      enabled: true
+    loop:
+      - puppet
+      - nginx
+  
+  - name: Generate certificates & fetch data
+    shell: /opt/puppetlabs/puppet/bin/puppet agent --onetime
+
+  - name: Restart nginx
+    service:
+      name  : nginx
+      state : restarted
+  
+
+- name: Config slave2.puppet
+  hosts: slave2
+  become: true
+  tasks:
+  
+  - name: Update nginx config file
+    replace:
+      path: /etc/nginx/nginx.conf
+      regexp: "index.html"
+      replace: "index.php"
+
+
+
+
+
+
+        
+    
+
+
+
+
+
+  
+    
+
+
+
+
+
