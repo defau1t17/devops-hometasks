@@ -1,0 +1,108 @@
+---
+- name : Update all VM's
+  hosts: all
+  become: true
+  tasks:
+
+  - name: Config hosts file 
+    blockinfile:
+      path  : /etc/hosts
+      block : "192.168.56.10 master.puppet"
+
+  - name: Download Puppet Repository
+    yum:
+      name: https://yum.puppet.com/puppet7-release-el-8.noarch.rpm
+      state: present
+      disable_gpg_check: true      
+
+  - name: Stop the firewall service
+    service: 
+      name: firewalld
+      state: stopped
+      
+- name: Configure master VM
+  hosts: master
+  become: true
+  tasks:
+
+  - name: Install puppetserver & git
+    yum:
+      name: "{{ item }}"  
+    loop:
+      - git
+      - puppetserver
+
+  - name: Start puppet configuration role
+    include_role :
+      name : puppet
+      tasks_from : puppet-config
+  
+  - name: Config r10k stuff
+    include_role :
+      name : r10k
+      tasks_from: r10k-master
+
+  - name: Pull information from GitHub
+    shell: /opt/puppetlabs/puppet/bin/r10k deploy environment 
+  
+  - name: Config cron for r10k
+    cron:
+      name: "execute r10k deploy environment"
+      minute: "*"
+      job: /opt/puppetlabs/puppet/bin/r10k deploy environment 
+
+- name: Configure slaves VM's
+  hosts: slaves
+  become: true
+  tasks:
+
+  - include_vars: roles/agent/vars/agent-var.yaml
+
+  - name: Install puppet-agent & nginx & php
+    yum:
+      name: "{{ item }}"
+      state: latest
+    loop:
+      - puppet-agent
+      - nginx
+      - php
+
+  - name: Config Slave's stuff
+    include_role: 
+      name: agent
+      tasks_from: agent-config
+      handlers_from: nginx-handler 
+
+- name: Config slave2.puppet
+  hosts: slave2
+  become: true
+  tasks:
+  
+  - name: Update nginx config file
+    replace:
+      path: /etc/nginx/nginx.conf
+      regexp: "index.html"
+      replace: "index.php"
+
+
+    
+
+
+
+
+
+
+        
+    
+
+
+
+
+
+  
+    
+
+
+
+
+

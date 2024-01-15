@@ -1,0 +1,18 @@
+- name: Edit JAVA_ARGS values in puppet config file
+  replace:
+    path: /etc/sysconfig/puppetserver
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.replace }}"
+  loop:
+    - {regexp  : '-Xms(\d+)g',  replace : '-Xms256m'}
+    - {regexp  : '-Xmx(\d+)g',  replace : '-Xmx256m'}
+
+- name: Start puppetserver 
+  service:
+    name: puppetserver
+    state: started
+
+- name: Enable puppetserver 
+  service:
+    name: puppetserver
+    enabled: true

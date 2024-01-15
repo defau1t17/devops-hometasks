@@ -1,0 +1,25 @@
+- name: Insert masters IP in hosts
+  blockinfile:
+    path   :  "/etc/puppetlabs/puppet/puppet.conf"
+    block  : "{{ agent }}"
+  
+- name: Start puppet agent & nginx & stop firewalld
+  service:
+    name  : "{{ item.name }}"
+    state : "{{ item.state }}"
+  loop:
+    - {name: puppet, state: started}
+    - {name: nginx, state: started}
+    
+- name: Enable puppet agent & nginx
+  service:
+    name: "{{ item }}"
+    enabled: true
+  loop:
+    - puppet
+    - nginx
+  
+- name: Generate certificates & fetch data
+  shell: /opt/puppetlabs/puppet/bin/puppet agent --onetime
+  notify : 
+      - NginxServerRestart

@@ -1,0 +1,26 @@
+- name: Look for r10k
+  stat:
+    path: /opt/puppetlabs/puppet/bin/r10k
+  register: status
+
+- name: Installing r10k at Master Server
+  shell: /opt/puppetlabs/puppet/bin/gem install r10k -v 3.6.0
+  when: status.stat.exists == false
+
+- name: Insert r10k config file
+  file:
+    path: /etc/puppetlabs/r10k
+    state: directory
+
+- name: Insert r10k & autosigh configs 
+  template:
+    dest: "{{ item.dest }}"
+    src : "{{ item.src }}"
+  loop:
+    - {dest: "/etc/puppetlabs/r10k", src : 'roles/r10k/files/r10k.yaml'}
+    - {dest: "/etc/puppetlabs/puppet", src : 'roles/r10k/files/autosign.conf'}
+
+- name: Restart puppet server
+  service:
+    name: puppetserver
+    state: restarted
