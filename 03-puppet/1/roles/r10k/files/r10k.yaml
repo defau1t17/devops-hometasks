@@ -3,4 +3,4 @@
 :sources:
     :git:
         :remote: 'https://github.com/defau1t17/puppet_labs.git'
-        :basedir: '/etc/puppetlabs/code/environments/production/manifests'
+        :basedir: '/etc/puppetlabs/code/environments'
