@@ -1,0 +1,11 @@
+- name: Config puppet files
+  import_tasks:
+    file: config.yaml
+
+- name: Start up Puppet Service 
+  import_tasks:
+    file: startup.yaml
+
+- name: Generate sertificates & pull data
+  import_tasks:
+    file: pull.yaml

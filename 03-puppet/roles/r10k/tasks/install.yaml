@@ -1,0 +1,8 @@
+- name: Look for r10k
+  stat:
+    path: /opt/puppetlabs/puppet/bin/r10k
+  register: status
+
+- name: Installing r10k at Master Server
+  shell: /opt/puppetlabs/puppet/bin/gem install r10k -v 3.6.0
+  when: status.stat.exists == false

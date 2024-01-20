@@ -1,0 +1,14 @@
+- name: Config Java Args
+  import_tasks:
+    file: config-args.yaml
+
+- name: Config Puppet Agent 
+  import_tasks:
+    file: config.yaml    
+  
+- name: Start up Puppet Server
+  import_tasks:
+    file: startup.yaml
+
+
+

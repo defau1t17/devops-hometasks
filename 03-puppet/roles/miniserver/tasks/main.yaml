@@ -1,0 +1,11 @@
+- name: Config Puppet file 
+  import_tasks:
+    file: puppetconfig.yaml
+
+- name: Start up Puppet Service
+  import_tasks:
+    file: startup.yaml
+
+- name: Pull data
+  import_tasks:
+    file: pull.yaml

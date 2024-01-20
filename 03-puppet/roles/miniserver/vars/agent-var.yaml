@@ -1,0 +1,5 @@
+agent: |
+    [agent]
+    server = master.puppet
+    runinterval = 1m
+    environment = puppetconfig

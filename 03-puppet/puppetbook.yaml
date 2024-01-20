@@ -32,65 +32,33 @@
       - git
       - puppetserver
 
-  - name: Start puppet configuration role
+  - name: Puppet Configuration
     include_role :
       name : puppet
-      tasks_from : puppet-config
   
   - name: Config r10k stuff
     include_role :
       name : r10k
-      tasks_from: r10k-master
-
-  - name: Pull information from GitHub
-    shell: /opt/puppetlabs/puppet/bin/r10k deploy environment 
-  
-  - name: Config cron for r10k
-    cron:
-      name: "execute r10k deploy environment"
-      minute: "*"
-      job: /opt/puppetlabs/puppet/bin/r10k deploy environment 
+      tasks_from: main
 
 - name: Configure slaves VM's
   hosts: slaves
   become: true
   tasks:
 
-  - include_vars: roles/agent/vars/agent-var.yaml
-
-  - name: Install puppet-agent & nginx & php
+  - name: Install puppet-agent
     yum:
       name: "{{ item }}"
       state: latest
     loop:
       - puppet-agent
-      - nginx
-      - php
 
   - name: Config Slave's stuff
     include_role: 
       name: agent
-      tasks_from: agent-config
-      handlers_from: nginx-handler 
-
-- name: Config slave2.puppet
-  hosts: slave2
-  become: true
-  tasks:
-  
-  - name: Update nginx config file
-    replace:
-      path: /etc/nginx/nginx.conf
-      regexp: "index.html"
-      replace: "index.php"
-
+      tasks_from: main
 
     
-
-
-
-
-
 
         
     

@@ -1,0 +1,2 @@
+- name: Generate certificates & fetch data
+  shell: /opt/puppetlabs/puppet/bin/puppet agent --onetime

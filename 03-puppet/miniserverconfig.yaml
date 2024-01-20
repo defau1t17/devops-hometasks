@@ -1,0 +1,25 @@
+---
+- name: Config miniserver
+  hosts: miniserver
+  become: true
+  tasks:
+
+  - name: Config hosts file 
+    blockinfile:
+      path  : /etc/hosts
+      block : "192.168.56.10 master.puppet"
+
+  - name: Download Puppet Repository
+    apt:
+      deb: https://apt.puppet.com/puppet7-release-bullseye.deb
+
+  - name: Install puppet-agent
+    apt:
+      update_cache: true
+      name: puppet-agent
+      state: present
+  
+  - name: Config Slave's stuff
+    include_role: 
+      name: miniserver
+      tasks_from: main.yaml

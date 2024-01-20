@@ -1,0 +1,17 @@
+- name: Install r10k
+  import_tasks: 
+    file: install.yaml
+
+- name: Config r10k files 
+  import_tasks:
+    file: config.yaml
+
+- name: Deploy
+  shell: /opt/puppetlabs/puppet/bin/r10k deploy environment -p
+
+- name: Config crone for regular deployment 
+  import_tasks:
+    file: cron.yaml
+
+- name: Pull files
+  shell: /opt/puppetlabs/puppet/bin/puppet agent --onetime

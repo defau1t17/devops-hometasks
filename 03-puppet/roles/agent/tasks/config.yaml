@@ -1,0 +1,6 @@
+- include_vars: roles/agent/vars/agent-var.yaml
+
+- name: Insert masters IP in hosts
+  blockinfile:
+    path   :  "/etc/puppetlabs/puppet/puppet.conf"
+    block  : "{{ agent }}"

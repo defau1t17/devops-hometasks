@@ -1,5 +1,0 @@
----
-- name: NginxServerRestart
-  service:
-    name: nginx
-    state: restarted

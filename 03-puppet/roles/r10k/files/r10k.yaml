@@ -2,5 +2,5 @@
 
 :sources:
     :git:
-        :remote: 'https://github.com/defau1t17/puppet_labs.git'
+        :remote: 'https://github.com/defau1t17/puppet-test'
         :basedir: '/etc/puppetlabs/code/environments'
