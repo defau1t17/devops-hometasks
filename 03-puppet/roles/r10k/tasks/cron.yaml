@@ -1,5 +1,5 @@
 - name: Config cron for r10k
   cron:
     name: "execute r10k deploy environment"
-    minute: "*"
+    minute: "*/5"
     job: /opt/puppetlabs/puppet/bin/r10k deploy environment -p

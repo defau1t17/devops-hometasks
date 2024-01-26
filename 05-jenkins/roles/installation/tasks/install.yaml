@@ -1,0 +1,9 @@
+- name: Install Java & Jenkins
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - openjdk-11-jdk
+    - jenkins
+  notify:
+    - Start Up Jenkins Service

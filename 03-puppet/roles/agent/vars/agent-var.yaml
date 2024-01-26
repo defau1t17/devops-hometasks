@@ -1,5 +1,5 @@
 agent: |
     [agent]
     server = master.puppet
-    runinterval = 1m
+    runinterval = 5m
     environment = production

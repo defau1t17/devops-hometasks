@@ -1,0 +1,13 @@
+jenkins:
+  systemMessage: 'This is my first Jenkins Job'
+
+credentials:
+  system:
+    domainCredentials:
+    - credentials:
+      - usernamePassword:
+          scope:    GLOBAL
+          id:       cread
+          username: vagrant
+          password: vagrant
+
