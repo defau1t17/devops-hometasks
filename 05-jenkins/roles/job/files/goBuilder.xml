@@ -1,7 +1,6 @@
 <?xml version='1.1' encoding='UTF-8'?>
 <project>
-  <actions/>
-  <description>Job For Building Word Cloud Generator</description>
+  <description>Word Cloud Generator Build</description>
   <keepDependencies>false</keepDependencies>
   <properties/>
   <scm class="hudson.plugins.git.GitSCM" plugin="git@5.2.1">
@@ -29,7 +28,6 @@
   <builders>
     <hudson.tasks.Shell>
       <command>GOOS=linux GOARCH=amd64 go build -o ./artifacts/word-cloud-generator -v 
-
 md5sum artifacts/word-cloud-generator
 gzip artifacts/word-cloud-generator
 ls -l artifacts/</command>
@@ -39,7 +37,7 @@ ls -l artifacts/</command>
   <publishers/>
   <buildWrappers>
     <org.jenkinsci.plugins.golang.GolangBuildWrapper plugin="golang@1.4">
-      <goVersion>default</goVersion>
+      <goVersion>go_lang</goVersion>
     </org.jenkinsci.plugins.golang.GolangBuildWrapper>
   </buildWrappers>
 </project>
