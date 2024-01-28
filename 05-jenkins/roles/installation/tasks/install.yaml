@@ -5,5 +5,10 @@
   loop:
     - openjdk-11-jdk
     - jenkins
+    - pip
   notify:
     - Start Up Jenkins Service
+
+- name: Install Python For Jenkins
+  pip:
+    name: python-jenkins
