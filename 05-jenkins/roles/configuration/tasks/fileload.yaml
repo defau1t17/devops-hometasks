@@ -5,4 +5,4 @@
   loop:
     - {src: 'roles/configuration/files/01-admin-user.groovy', dest: '/var/lib/jenkins/init.groovy.d/'}
     - {src: 'roles/configuration/files/02_plugins.groovy', dest: '/var/lib/jenkins/init.groovy.d/'}
-    - {src: 'roles/configuration/files/job.yaml', dest: '/var/lib/jenkins/casc_configs/'}
+    - {src: 'roles/configuration/files/credentials.yaml', dest: '/var/lib/jenkins/casc_configs/'} 

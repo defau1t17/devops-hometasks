@@ -3,6 +3,7 @@
   hosts: jenkins
   become: true
   roles:
-      - installation
-      - configuration
-     
+    - installation
+    - configuration
+    - job
+
