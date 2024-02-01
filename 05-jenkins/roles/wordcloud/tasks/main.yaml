@@ -1,0 +1,7 @@
+- name: Install parser
+  import_tasks:
+    file: install.yaml
+
+- name: Config Service
+  import_tasks:
+    file: service.yaml

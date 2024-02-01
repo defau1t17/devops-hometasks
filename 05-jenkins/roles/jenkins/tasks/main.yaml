@@ -1,0 +1,24 @@
+- name: Download repository & key
+  import_tasks:
+    file: repository.yaml 
+
+- name: Install java & jenkins
+  import_tasks:
+    file: install.yaml 
+
+- name: Create dir's for scripts
+  import_tasks:
+    file: createdir.yaml
+
+- name: Load Scripts
+  import_tasks:
+    file: fileload.yaml
+
+- name: Config environment
+  import_tasks:
+    file: environment.yaml
+
+
+
+
+  

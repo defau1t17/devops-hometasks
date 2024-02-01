@@ -1,0 +1,50 @@
+---
+- name: Config nexus 
+  become: true
+  hosts:  nexus 
+  pre_tasks:
+  vars: 
+    nexus_application_host: '{{ httpd_setup_enable | ternary("{{ NEXUS_SERVER}}", "0.0.0.0") }}'
+    nexus_default_port: 8081
+    nexus_onboarding_wizard: false
+    nexus_admin_password: admin
+    nexus_anonymous_access: false
+    nexus_delete_default_repos: true  
+    nexus_config_raw: true
+    _nexus_repos_raw_defaults:
+      blob_store: default
+      strict_content_validation: true
+      version_policy: release     
+      layout_policy: strict 
+      write_policy: allow_once
+      maximum_component_age: 1440
+      maximum_metadata_age: 1440 
+      negative_cache_enabled: true 
+      negative_cache_ttl: 1440 
+    nexus_repos_raw_hosted:
+      - name: word-cloud-build
+    nexus_repos_raw_group:
+      - name: word-cloud-build
+        member_repos:
+        - raw-internal
+    nexus_roles:
+      - id: nexus-uploader 
+        name: nexus-uploader
+        description: 
+        privileges:
+          - nx-repository-view-raw-word-cloud-build-* 
+          - nx-repository-admin-raw-word-cloud-build-*
+    nexus_local_users: 
+      - username: jenkins 
+        state: present 
+        first_name: Jenkins
+        last_name: Jenkins
+        email: support@company.com
+        password: "jenkins"
+        roles:
+          - nexus-uploader  
+  roles:
+    - nexus
+    - nexus3-oss
+
+

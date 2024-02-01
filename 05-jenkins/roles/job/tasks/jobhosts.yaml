@@ -1,0 +1,9 @@
+- name: Replace IP-s addresses in XML file
+  replace:
+    path: /var/lib/jenkins/jobs/goBuilder/config.xml
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.replace }}"
+  loop:
+    - {regexp : "NEXUS_SERVER_IP", replace: "{{ NEXUS_SERVER }}"}
+    - {regexp : "STAGING_SERVER_IP", replace: "{{ STAGING_SERVER }}"}
+    - {regexp : "PRODUCTION_SERVER_IP", replace: "{{ PRODUCTION_SERVER }}"}

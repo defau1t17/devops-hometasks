@@ -1,0 +1,47 @@
+---
+- name:  os-release
+  become: yes
+  shell: echo "deb https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list
+  register: check_stdout
+
+- name: Add key
+  become: yes
+  apt_key:
+    url: https://packages.adoptium.net/artifactory/api/gpg/key/public
+
+- name: Add repository
+  become: yes
+  apt_repository:
+    repo: "{{ check_stdout.stdout }}"
+    state: present
+
+- name: install Java 8
+  become: yes
+  apt:
+    update_cache: true
+    pkg: temurin-8-jdk
+
+- name: Download Nexus
+  get_url:
+    url: https://download.sonatype.com/nexus/3/nexus-3.44.0-01-unix.tar.gz
+    checksum: md5:85faeef3abff113784736dca34121be2
+    dest: /opt/nexus3.tar.gz
+    timeout: 120
+
+- name: Create workdir
+  file:
+    path: /opt/nexus
+    state: directory
+
+- name: Unpack Nexus
+  unarchive:
+    remote_src: true  
+    src: /opt/nexus3.tar.gz
+    dest: /opt/nexus/
+
+- name: Find last release
+  find:
+    file_type: directory
+    patterns: 'nexus*'
+    path: /opt/nexus
+  register: nexus_path

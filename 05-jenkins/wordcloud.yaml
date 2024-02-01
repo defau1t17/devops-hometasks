@@ -1,0 +1,5 @@
+- name: Config Staging VM
+  hosts: staging production
+  become: true
+  roles:
+    - wordcloud

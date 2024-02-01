@@ -4,6 +4,7 @@
     name: goBuilder
     user: admin
     password: admin
-    url: http://192.168.56.10:8080
+    url: http://{{ JENKINS_SERVER }}:8080
     state: present  
- 
+  
+

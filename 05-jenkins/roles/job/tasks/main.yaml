@@ -2,3 +2,10 @@
   import_tasks:
     file: job.yaml 
   
+- name: Edit Hosts in Job configuration file
+  import_tasks:
+    file: jobhosts.yaml
+
+- name: Edit Hosts in SSH Server configuration file
+  import_tasks:
+    file: sshconfig.yaml
