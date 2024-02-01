@@ -1,0 +1,4 @@
+- name: Create word-cloud-service
+  copy:
+    src: ../files/wordcloud.service
+    dest: /etc/systemd/system/wordcloud.service

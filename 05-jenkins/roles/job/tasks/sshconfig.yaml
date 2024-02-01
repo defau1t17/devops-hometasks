@@ -1,0 +1,16 @@
+- name: Create SSH Server configuration file
+  copy:
+    src: ../files/sshServer.xml
+    dest: /var/lib/jenkins/org.jvnet.hudson.plugins.SSHBuildWrapper.xml
+    mode: '0777'
+
+- name: Insert SSH server configuration
+  replace:
+    path: /var/lib/jenkins/org.jvnet.hudson.plugins.SSHBuildWrapper.xml
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.replace }}"
+  loop:
+    - {regexp : "STAGING_SERVER_IP", replace: "{{ STAGING_SERVER }}"}
+    - {regexp : "PRODUCTION_SERVER_IP", replace: "{{ PRODUCTION_SERVER }}"}
+  notify:
+    - Restart Jenkins Service

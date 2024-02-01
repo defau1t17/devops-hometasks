@@ -1,0 +1,15 @@
+- name: Reload daemon
+  systemd_service :
+    daemon_reload: true
+
+- name: Start Up Jenkins Service
+  service:
+    name: jenkins
+    state: started
+    
+- name: Restart Jenkins Service
+  service:
+    name: jenkins
+    state: restarted
+
+

@@ -1,7 +1,7 @@
 <?xml version='1.1' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>Job For Building Word Cloud Generator</description>
+  <description>Word Cloud Generator Build</description>
   <keepDependencies>false</keepDependencies>
   <properties/>
   <scm class="hudson.plugins.git.GitSCM" plugin="git@5.2.1">
@@ -28,18 +28,85 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>GOOS=linux GOARCH=amd64 go build -o ./artifacts/word-cloud-generator -v 
-
-md5sum artifacts/word-cloud-generator
-gzip artifacts/word-cloud-generator
+      <command>sed -i &quot;s/1.DEVELOPMENT/1.$BUILD_NUMBER/g&quot; static/version
+GOOS=linux GOARCH=amd64 go build -o ./artifacts/word-cloud-generator-$BUILD_NUMBER  
+gzip artifacts/word-cloud-generator-$BUILD_NUMBER
 ls -l artifacts/</command>
       <configuredLocalRules/>
     </hudson.tasks.Shell>
+    <sp.sd.nexusartifactuploader.NexusArtifactUploader plugin="nexus-artifact-uploader@2.14">
+      <nexusVersion>nexus3</nexusVersion>
+      <protocol>http</protocol>
+      <nexusUrl>NEXUS_SERVER_IP:8081</nexusUrl>
+      <groupId>1</groupId>
+      <version>$BUILD_NUMBER</version>
+      <repository>word-cloud-build</repository>
+      <artifacts>
+        <sp.sd.nexusartifactuploader.Artifact>
+          <artifactId>word-cloud-generator</artifactId>
+          <type>gz</type>
+          <classifier></classifier>
+          <file>artifacts/word-cloud-generator-$BUILD_NUMBER.gz</file>
+        </sp.sd.nexusartifactuploader.Artifact>
+      </artifacts>
+      <credentialsId>jenkins</credentialsId>
+    </sp.sd.nexusartifactuploader.NexusArtifactUploader>
+    <org.jvnet.hudson.plugins.SSHBuilder plugin="ssh@2.6.1">
+      <siteName>vagrant@STAGING_SERVER_IP:22</siteName>
+      <command>sudo service wordcloud stop
+sudo mkdir /opt/wordcloud/
+sudo chmod 777 /opt/wordcloud/
+
+curl -X GET &quot;http://NEXUS_SERVER_IP:8081/repository/word-cloud-build/1/word-cloud-generator/$BUILD_NUMBER/word-cloud-generator-$BUILD_NUMBER.gz&quot; -o /opt/wordcloud/word-cloud-generator.gz  -u &quot;$NEXUS_DOWNLOAD_USER:$NEXUS_DOWNLOAD_PASSWORD&quot;
+
+sudo gunzip -f /opt/wordcloud/word-cloud-generator.gz
+sudo chmod +x /opt/wordcloud/word-cloud-generator
+sudo service wordcloud start</command>
+      <execEachLine>false</execEachLine>
+      <hideCommand>false</hideCommand>
+    </org.jvnet.hudson.plugins.SSHBuilder>
+    <org.jvnet.hudson.plugins.SSHBuilder plugin="ssh@2.6.1">
+      <siteName>vagrant@STAGING_SERVER_IP:22</siteName>
+      <command>res=`curl -s  http://STAGING_SERVER_IP:8888/version | jq -r  &apos;.version&apos;`
+if [ &quot;1.$BUILD_NUMBER&quot; != &quot;$res&quot; ]; then
+  exit 99
+fi
+
+res=`curl -s -H &quot;Content-Type: application/json&quot; -d &apos;{&quot;text&quot;:&quot;ths is a really really really important thing this is&quot;}&apos; http://STAGING_SERVER_IP:8888/api | jq &apos;. | length&apos;`
+if [ &quot;7&quot; != &quot;$res&quot; ]; then
+  exit 99
+fi</command>
+      <execEachLine>false</execEachLine>
+      <hideCommand>false</hideCommand>
+    </org.jvnet.hudson.plugins.SSHBuilder>
+    <org.jvnet.hudson.plugins.SSHBuilder plugin="ssh@2.6.1">
+      <siteName>vagrant@PRODUCTION_SERVER_IP:22</siteName>
+      <command>sudo service wordcloud stop
+sudo mkdir /opt/wordcloud/
+sudo chmod 777 /opt/wordcloud/
+
+curl -X GET &quot;http://NEXUS_SERVER_IP:8081/repository/word-cloud-build/1/word-cloud-generator/$BUILD_NUMBER/word-cloud-generator-$BUILD_NUMBER.gz&quot; -o /opt/wordcloud/word-cloud-generator.gz  -u &quot;$NEXUS_DOWNLOAD_USER:$NEXUS_DOWNLOAD_PASSWORD&quot;
+
+sudo gunzip -f /opt/wordcloud/word-cloud-generator.gz
+sudo chmod +x /opt/wordcloud/word-cloud-generator
+sudo service wordcloud start</command>
+      <execEachLine>false</execEachLine>
+      <hideCommand>false</hideCommand>
+    </org.jvnet.hudson.plugins.SSHBuilder>
   </builders>
   <publishers/>
   <buildWrappers>
+    <org.jenkinsci.plugins.credentialsbinding.impl.SecretBuildWrapper plugin="credentials-binding@657.v2b_19db_7d6e6d">
+      <bindings>
+        <org.jenkinsci.plugins.credentialsbinding.impl.UsernamePasswordMultiBinding>
+          <credentialsId>jenkins</credentialsId>
+          <usernameVariable>NEXUS_DOWNLOAD_USER</usernameVariable>
+          <passwordVariable>NEXUS_DOWNLOAD_PASSWORD</passwordVariable>
+        </org.jenkinsci.plugins.credentialsbinding.impl.UsernamePasswordMultiBinding>
+      </bindings>
+    </org.jenkinsci.plugins.credentialsbinding.impl.SecretBuildWrapper>
     <org.jenkinsci.plugins.golang.GolangBuildWrapper plugin="golang@1.4">
-      <goVersion>default</goVersion>
+      <goVersion>go_lang</goVersion>
     </org.jenkinsci.plugins.golang.GolangBuildWrapper>
   </buildWrappers>
 </project>

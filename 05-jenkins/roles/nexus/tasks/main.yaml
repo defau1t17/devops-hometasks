@@ -1,0 +1,7 @@
+- name: Install Nexus
+  import_tasks:
+    file: install.yaml
+
+- name: Start Nexus Service
+  import_tasks:
+    file: start.yaml
