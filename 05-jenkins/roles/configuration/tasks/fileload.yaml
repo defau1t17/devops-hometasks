@@ -1,8 +1,0 @@
-- name: Load Groovy Scripts at VM
-  template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-  loop:
-    - {src: 'roles/configuration/files/01-admin-user.groovy', dest: '/var/lib/jenkins/init.groovy.d/'}
-    - {src: 'roles/configuration/files/02_plugins.groovy', dest: '/var/lib/jenkins/init.groovy.d/'}
-    - {src: 'roles/configuration/files/credentials.yaml', dest: '/var/lib/jenkins/casc_configs/'} 

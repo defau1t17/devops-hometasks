@@ -1,9 +1,0 @@
-- name: Download repository & key
-  import_tasks:
-    file: repository.yaml 
-
-- name: Install java & jenkins
-  import_tasks:
-    file: install.yaml 
-
-
