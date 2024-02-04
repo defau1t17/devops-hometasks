@@ -1,6 +1,5 @@
 - name: Reload daemon
-  systemd_service :
-    daemon_reload: true
+  shell: systemctl daemon-reload
 
 - name: Start Up Jenkins Service
   service:
