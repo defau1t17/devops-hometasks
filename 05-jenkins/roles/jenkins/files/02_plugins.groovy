@@ -3,7 +3,7 @@ import java.util.logging.Logger
 def logger = Logger.getLogger("")
 def installed = false
 def initialized = false
-def pluginParameter = "credentials credentials-binding locale git timestamper pipeline-groovy-lib workflow-basic-steps workflow-cps workflow-multibranch pipeline-build-step pipeline-input-step pipeline-milestone-step pipeline-stage-step pipeline-model-definition configuration-as-code golang nexus-artifact-uploader ssh sshPublisher publish-over-ssh"
+def pluginParameter = "credentials credentials-binding locale git timestamper pipeline-groovy-lib workflow-basic-steps workflow-cps workflow-multibranch pipeline-build-step pipeline-input-step pipeline-milestone-step pipeline-stage-step pipeline-model-definition configuration-as-code golang nexus-artifact-uploader ssh"
 def plugins = pluginParameter.split()
 logger.info("" + plugins)
 def instance = Jenkins.getInstance()
