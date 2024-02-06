@@ -27,6 +27,7 @@ Vagrant.configure("2") do |config|
     nexus.vm.network "private_network", ip: NEXUS_SERVER_IP
     nexus.vm.provision "ansible" do |ansible|
         ansible.playbook = "nexus.yaml"
+        ansible.galaxy_role_file = "requirements.yaml"
         ansible.host_vars = {
           "nexus" => {"NEXUS_SERVER" => NEXUS_SERVER_IP,
           }
