@@ -7,16 +7,17 @@ pipeline{
         PRODUCTION_HOST_IP="192.168.59.85"
         NEXUS_CREDENTIALS=credentials('nexus-creds')
         REMOTE_HOSTS_CREDS=credentials('remote-hosts')
-        get_wordcloud_script_text="""sudo service wordcloud stop 
-        sudo mkdir /opt/wordcloud/ 
-        sudo chmod 777 /opt/wordcloud/ 
-        curl -X GET http://$NEXUS_HOST_IP:8081/repository/word-cloud-build/1/word-cloud-generator/"$BUILD_NUMBER"/word-cloud-generator-"$BUILD_NUMBER".gz -o /opt/wordcloud/word-cloud-generator.gz  -u "$NEXUS_CREDENTIALS_USR:$NEXUS_CREDENTIALS_PSW" 
-        sudo gunzip -f /opt/wordcloud/word-cloud-generator.gz
-        sudo chmod +x /opt/wordcloud/word-cloud-generator
-        sudo service wordcloud start
+        get_wordcloud_script_text="""
+            sudo service wordcloud stop 
+            sudo mkdir /opt/wordcloud/ 
+            sudo chmod 777 /opt/wordcloud/ 
+            curl -X GET http://$NEXUS_HOST_IP:8081/repository/word-cloud-build/1/word-cloud-generator/"$BUILD_NUMBER"/word-cloud-generator-"$BUILD_NUMBER".gz -o /opt/wordcloud/word-cloud-generator.gz  -u "$NEXUS_CREDENTIALS_USR:$NEXUS_CREDENTIALS_PSW" 
+            sudo gunzip -f /opt/wordcloud/word-cloud-generator.gz
+            sudo chmod +x /opt/wordcloud/word-cloud-generator
+            sudo service wordcloud start
         """
     }
-    tools {
+    tools{
         go 'go_lang'
     }
     stages{
@@ -30,52 +31,49 @@ pipeline{
                 sh '''
                     make lint 
                     make test
-                '''
+                    '''
             }
         }
         stage("build project"){
             steps{
                 sh '''
-                sed -i "s/1.DEVELOPMENT/1.$BUILD_NUMBER/g" static/version
-                GOOS=linux GOARCH=amd64 go build -o ./artifacts/word-cloud-generator-$BUILD_NUMBER  
-                gzip artifacts/word-cloud-generator-$BUILD_NUMBER
-                '''
+                    sed -i "s/1.DEVELOPMENT/1.$BUILD_NUMBER/g" static/version
+                    GOOS=linux GOARCH=amd64 go build -o ./artifacts/word-cloud-generator-$BUILD_NUMBER  
+                    gzip artifacts/word-cloud-generator-$BUILD_NUMBER
+                    '''
             }
         }
-       
         stage("upload artifacts"){
             steps{
                 nexusArtifactUploader (artifacts: 
-                 [[artifactId: 'word-cloud-generator', 
-                 classifier: '', 
-                 file: 'artifacts/word-cloud-generator-$BUILD_NUMBER.gz',
-                  type: 'gz']], 
-                  credentialsId: 'nexus-creds',
-                  groupId: '1',
-                  nexusUrl: "${Env:NEXUS_HOST_IP}:8081/", 
-                  nexusVersion: 'nexus3',
-                  protocol: 'http', 
-                  repository: 'word-cloud-build', 
-                  version: '$BUILD_NUMBER'
-                 )
+                    [[artifactId: 'word-cloud-generator', 
+                    classifier: '', 
+                    file: 'artifacts/word-cloud-generator-$BUILD_NUMBER.gz',
+                    type: 'gz']], 
+                    credentialsId: 'nexus-creds',
+                    groupId: '1',
+                    nexusUrl: "${Env:NEXUS_HOST_IP}:8081/", 
+                    nexusVersion: 'nexus3',
+                    protocol: 'http', 
+                    repository: 'word-cloud-build', 
+                    version: '$BUILD_NUMBER'
+                    )
             }
         }
-            
         stage("download artifact at staging server"){
             steps{
                 script {
-                def remote = [:]
-                remote.name = 'test'
-                remote.host = "$STAGING_HOST_IP"
-                remote.user = "$REMOTE_HOSTS_CREDS_USR"
-                remote.password = "$REMOTE_HOSTS_CREDS_PSW"
-                remote.allowAnyHosts = true
-                    writeFile file: 'download.sh', text: "$get_wordcloud_script_text"
-                    sshScript remote: remote, script: "download.sh"
+                    def remote = [:]
+                    remote.name = 'test'
+                    remote.host = "$STAGING_HOST_IP"
+                    remote.user = "$REMOTE_HOSTS_CREDS_USR"
+                    remote.password = "$REMOTE_HOSTS_CREDS_PSW"
+                    remote.allowAnyHosts = true
+                        writeFile file: 'download.sh', text: "$get_wordcloud_script_text"
+                        sshScript remote: remote, script: "download.sh"
                 }
             }
         }
-       
         stage('make tests'){
             parallel{
                 stage('test 1'){
@@ -87,12 +85,17 @@ pipeline{
                         remote.user = "$REMOTE_HOSTS_CREDS_USR"
                         remote.password = "$REMOTE_HOSTS_CREDS_PSW"
                         remote.allowAnyHosts = true
-                            sshCommand remote: remote, command: """
-                                res=\$(curl -s  http://"$STAGING_HOST_IP":8888/version | jq -r  '.version')
-                                if [ "1.$BUILD_NUMBER" != \$res ]; then
-                                exit 99
-                                fi
-                                """
+                        sshCommand remote: remote, command: """
+                            res=\$(curl -s -H "Content-Type: application/json" -d '{"text":"ths is a really really really important thing this is"}' http://"$STAGING_HOST_IP":8888/api | jq '. | length')
+                            if [ "7" != \$res ]; then
+                            exit 99
+                            fi
+                                    
+                            res=\$(curl -s  http://"$STAGING_HOST_IP":8888/version | jq -r  '.version')
+                            if [ "1.$BUILD_NUMBER" != \$res ]; then
+                            exit 99
+                            fi
+                            """
                         }
                     }
                 }
@@ -105,9 +108,14 @@ pipeline{
                         remote.user = "$REMOTE_HOSTS_CREDS_USR"
                         remote.password = "$REMOTE_HOSTS_CREDS_PSW"
                         remote.allowAnyHosts = true
-                            sshCommand remote: remote, command: """
+                        sshCommand remote: remote, command: """
                             res=\$(curl -s -H "Content-Type: application/json" -d '{"text":"ths is a really really really important thing this is"}' http://"$STAGING_HOST_IP":8888/api | jq '. | length')
                             if [ "7" != \$res ]; then
+                            exit 99
+                            fi
+
+                            res=\$(curl -s  http://"$STAGING_HOST_IP":8888/version | jq -r  '.version')
+                            if [ "1.$BUILD_NUMBER" != \$res ]; then
                             exit 99
                             fi
                             """
@@ -125,11 +133,10 @@ pipeline{
                 remote.user = "$REMOTE_HOSTS_CREDS_USR"
                 remote.password = "$REMOTE_HOSTS_CREDS_PSW"
                 remote.allowAnyHosts = true
-                    writeFile file: 'download.sh', text: "$get_wordcloud_script_text"
-                    sshScript remote: remote, script: "download.sh"
+                writeFile file: 'download.sh', text: "$get_wordcloud_script_text"
+                sshScript remote: remote, script: "download.sh"
                 }
             }
         }
     } 
-  
 }
