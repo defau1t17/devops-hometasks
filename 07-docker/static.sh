@@ -1,2 +1,2 @@
 #!/bin/bash
-docker run -p 8081:80 --name static -idt hometask-image sh -c 'a2dissite dynamic.conf;service apache2 reload;/usr/sbin/apache2ctl -DFOREGROUND'
+docker run -p 8081:80 --name static -v $(pwd)/volumes/content:/var/www/html -v $(pwd)/volumes/sites-enabled:/etc/apache2/sites-enabled -dit hometask-image 
