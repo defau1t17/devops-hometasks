@@ -1,0 +1,44 @@
+pipeline{
+    agent any
+    environment{
+        REMOETE_REPOSITORY_URL= "https://github.com/defau1t17/word-cloud-generator"
+        NEXUS_CREDENTIALS=credentials('nexus-creds')
+
+    }
+    tools{
+        go 'go_lang'
+    }
+    stages{
+        stage("download remote repository"){
+            steps{
+                git "$REMOETE_REPOSITORY_URL"
+            }
+        }
+        stage("build project"){
+            steps{
+                sh '''
+                    sed -i "s/1.DEVELOPMENT/1.$BUILD_NUMBER/g" static/version
+                    GOOS=linux GOARCH=amd64 go build -o ./artifacts/word-cloud-generator-$BUILD_NUMBER  
+                    gzip artifacts/word-cloud-generator-$BUILD_NUMBER
+                    '''
+            }
+        }
+        stage("upload artifacts"){
+            steps{
+                nexusArtifactUploader (artifacts: 
+                    [[artifactId: 'word-cloud-generator', 
+                    classifier: '', 
+                    file: 'artifacts/word-cloud-generator-$BUILD_NUMBER.gz',
+                    type: 'gz']], 
+                    credentialsId: 'nexus-creds',
+                    groupId: '1',
+                    nexusUrl: 'localhost:8081/', 
+                    nexusVersion: 'nexus3',
+                    protocol: 'http', 
+                    repository: 'word-cloud-build', 
+                    version: '$BUILD_NUMBER'
+                    )
+            }
+        }
+    } 
+}

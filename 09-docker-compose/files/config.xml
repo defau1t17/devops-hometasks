@@ -1,0 +1,64 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@1400.v7fd111b_ec82f">
+  <actions>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@2.2175.v76a_fff0a_2618"/>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@2.2175.v76a_fff0a_2618">
+      <jobProperties/>
+      <triggers/>
+      <parameters/>
+      <options/>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
+  </actions>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@3853.vb_a_490d892963">
+    <script>pipeline{
+    agent any
+    environment{
+        REMOETE_REPOSITORY_URL= &quot;https://github.com/defau1t17/word-cloud-generator&quot;
+        NEXUS_CREDENTIALS=credentials(&apos;nexus-creds&apos;)
+
+    }
+    tools{
+        go &apos;go_lang&apos;
+    }
+    stages{
+        stage(&quot;download remote repository&quot;){
+            steps{
+                git &quot;$REMOETE_REPOSITORY_URL&quot;
+            }
+        }
+        stage(&quot;build project&quot;){
+            steps{
+                sh &apos;&apos;&apos;
+                    sed -i &quot;s/1.DEVELOPMENT/1.$BUILD_NUMBER/g&quot; static/version
+                    GOOS=linux GOARCH=amd64 go build -o ./artifacts/word-cloud-generator-$BUILD_NUMBER  
+                    gzip artifacts/word-cloud-generator-$BUILD_NUMBER
+                    &apos;&apos;&apos;
+            }
+        }
+        stage(&quot;upload artifacts&quot;){
+            steps{
+                nexusArtifactUploader (artifacts: 
+                    [[artifactId: &apos;word-cloud-generator&apos;, 
+                    classifier: &apos;&apos;, 
+                    file: &apos;artifacts/word-cloud-generator-$BUILD_NUMBER.gz&apos;,
+                    type: &apos;gz&apos;]], 
+                    credentialsId: &apos;nexus-creds&apos;,
+                    groupId: &apos;1&apos;,
+                    nexusUrl: &apos;localhost:8081&apos;, 
+                    nexusVersion: &apos;nexus3&apos;,
+                    protocol: &apos;http&apos;, 
+                    repository: &apos;word-cloud-build&apos;, 
+                    version: &apos;$BUILD_NUMBER&apos;
+                    )
+            }
+        }
+    } 
+}</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>

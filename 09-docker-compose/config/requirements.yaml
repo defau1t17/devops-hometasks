@@ -1,0 +1,3 @@
+- name: nexus3-oss
+  src: https://github.com/ansible-ThoTeam/nexus3-oss.git
+  version: main

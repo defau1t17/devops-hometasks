@@ -1,0 +1,16 @@
+FROM jenkins/jenkins:latest
+
+WORKDIR /usr/share/jenkins/ref/init.groovy.d/
+COPY files/*.groovy  .
+
+WORKDIR /usr/share/jenkins/ref/casc_configs/
+COPY files/*.yaml .
+
+ENV JAVA_OPTS -Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -Dcasc.jenkins.config=${JENKINS_HOME}/casc_configs 
+
+WORKDIR ${JENKINS_HOME}/jobs/MainPipeline
+COPY files/*.xml .
+
+EXPOSE 8080
+
+
