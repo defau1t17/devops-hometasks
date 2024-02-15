@@ -1,5 +1,7 @@
 FROM jenkins/jenkins:latest
 
+USER root
+RUN apt-get update && apt-get install -y make
 WORKDIR /usr/share/jenkins/ref/init.groovy.d/
 COPY files/*.groovy  .
 

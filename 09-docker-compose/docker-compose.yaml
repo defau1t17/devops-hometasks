@@ -10,7 +10,9 @@ services:
     ports:
       - 80:8080
     networks:
-      - connection
+      appNetwork:
+        ipv4_address: 172.24.2.2
+  
   nexus:
     container_name: nexus-server
     build:
@@ -19,8 +21,13 @@ services:
     ports:
       - 81:8081
     networks:
-      - connection
+      appNetwork:
+        ipv4_address: 172.24.2.1
 
 networks:
-   connection:
+  appNetwork:
     driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.24.0.0/16"

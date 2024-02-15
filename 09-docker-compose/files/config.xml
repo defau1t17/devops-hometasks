@@ -29,6 +29,14 @@
                 git &quot;$REMOETE_REPOSITORY_URL&quot;
             }
         }
+        stage(&apos;test application locally&apos;){
+            steps{
+                sh &apos;&apos;&apos;
+                make lint
+                make test
+                &apos;&apos;&apos;
+            }
+        }
         stage(&quot;build project&quot;){
             steps{
                 sh &apos;&apos;&apos;
@@ -47,7 +55,7 @@
                     type: &apos;gz&apos;]], 
                     credentialsId: &apos;nexus-creds&apos;,
                     groupId: &apos;1&apos;,
-                    nexusUrl: &apos;localhost:8081&apos;, 
+                    nexusUrl: &apos;172.24.2.1:8081&apos;, 
                     nexusVersion: &apos;nexus3&apos;,
                     protocol: &apos;http&apos;, 
                     repository: &apos;word-cloud-build&apos;, 
