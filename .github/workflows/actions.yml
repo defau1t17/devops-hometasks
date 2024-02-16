@@ -3,14 +3,17 @@ run-name: Docker.multi
 on:
   workflow_dispatch
 
+env:
+  GITHUB_REPOSITORY_OWNER: iAmDefaultOwner
+  IMAGE_NAME: wcg
 jobs:
   buildAndPush:
     runs-on: ubuntu-latest
     steps:
-      - uses: docker/build-push-action@v5.1.0
-        with:
-          file:  "07-docker/Dockerfile.multi"
-          tags: wcg:latest
-          load: true
-          platforms: ghcr.io
+      - run: sudo apt update && sudo apt install docker git -y
+      - run: git clone https://github.com/defau1t17/devops-hometasks.git
+      - run: docker build -t ${IMAGE_NAME}:latest . -f devops-hometasks/07-docker/Dockerfile.multi
+      - run: export CR_PAT=${GITGUB_TOKEN}
+      - run: echo $CR_PAT | docker login ghcr.io -u defau1t17 --password-stdin
+      - run: docker push ghcr.io/${GITHUB_REPOSITORY_OWNER}/${IMAGE_NAME}:latest
           
