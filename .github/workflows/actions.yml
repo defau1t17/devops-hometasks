@@ -13,7 +13,7 @@ jobs:
       - run: sudo apt update && sudo apt install docker git -y
       - run: git clone https://github.com/defau1t17/devops-hometasks.git
       - run: docker build -t ${IMAGE_NAME}:latest . -f devops-hometasks/07-docker/Dockerfile.multi
-      - run: export CR_PAT=${GITGUB_TOKEN}
+      - run: export CR_PAT=${GITHUB_ACTION_TOKEN}
       - run: echo $CR_PAT | docker login ghcr.io -u defau1t17 --password-stdin
       - run: docker push ghcr.io/${GITHUB_REPOSITORY_OWNER}/${IMAGE_NAME}:latest
           
