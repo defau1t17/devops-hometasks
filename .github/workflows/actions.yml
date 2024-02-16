@@ -4,16 +4,16 @@ on:
   workflow_dispatch
 
 env:
-  GITHUB_REPOSITORY_OWNER: iAmDefaultOwner
   IMAGE_NAME: wcg
+  GITHUB_SHA: latest 
 jobs:
   buildAndPush:
     runs-on: ubuntu-latest
     steps:
       - run: sudo apt update && sudo apt install docker git -y
       - run: git clone https://github.com/defau1t17/devops-hometasks.git
-      - run: docker build -t ${IMAGE_NAME}:latest . -f devops-hometasks/07-docker/Dockerfile.multi
-      - run: export CR_PAT=${GITHUB_ACTION_TOKEN}
-      - run: echo $CR_PAT | docker login ghcr.io -u defau1t17 --password-stdin
-      - run: docker push ghcr.io/${GITHUB_REPOSITORY_OWNER}/${IMAGE_NAME}:latest
+      - run: docker build -t ${IMAGE_NAME}:${GITHUB_SHA} . -f devops-hometasks/07-docker/Dockerfile.multi
+      # - run: export CR_PAT=${GITHUB_ACTION_TOKEN}
+      # - run: echo $CR_PAT | docker login ghcr.io -u defau1t17 --password-stdin
+      # - run: docker push ghcr.io/${GITHUB_REPOSITORY_OWNER}/${IMAGE_NAME}:latest
           
