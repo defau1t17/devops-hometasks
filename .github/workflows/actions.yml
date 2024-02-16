@@ -1,13 +1,9 @@
-name: learn-github-actions
-run-name: ${{ github.actor }} is learning GitHub Actions
-on: [push]
+name: Deploy a Docker.multi Container 
+run-name: Docker.multi
+on:
+  workflow_dispatch
+  
 jobs:
-  check-bats-version:
-    runs-on: ubuntu-latest
+  test:
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '14'
-      - run: npm install -g bats
-      - run: bats -v
+      - run: echo 'Hello World'
