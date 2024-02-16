@@ -7,14 +7,8 @@ jobs:
   buildAndPush:
     runs-on: ubuntu-latest
     steps:
-      - uses: firehed/multistage-docker-build-action@v1
-        id: build
-        with:
-          dockerfile: "07-docker/Dockerfile.multi"
-          repository: ghcr.io/firehed/actions
-          stages: build, deploy
-          testenv-stage: testenv
-          server-stage: server
-          build-args: arg1=val1, arg2=val2
+      - run: apt install docker
+      - run:  docker build -t wcg:latest ../../07-Docker/ -f Dockerfile.multi
+      
     
 
