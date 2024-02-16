@@ -9,7 +9,7 @@ jobs:
     steps:
     - uses: docker/build-push-action@v5.1.0
       with:
-        context: ../../07-docker
+        context: ../../07-docker/
         file:  "Dockerfile.multi"
         tags: wcg:latest
         load: true
