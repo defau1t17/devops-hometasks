@@ -12,7 +12,7 @@ jobs:
         with:
           dockerfile: 07-docker/Dockerfile.multi
           repository: ghcr.io/firehed/actions
-          stages: BUILD
+          stages: build, deploy
           testenv-stage: testenv
           server-stage: server
           build-args: arg1=val1, arg2=val2
