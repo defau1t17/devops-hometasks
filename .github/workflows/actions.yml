@@ -10,7 +10,7 @@ jobs:
       - uses: firehed/multistage-docker-build-action@v1
         id: build
         with:
-          dockerfile: 07-docker/Dockerfile.multi
+          dockerfile: "07-docker/Dockerfile.multi"
           repository: ghcr.io/firehed/actions
           stages: build, deploy
           testenv-stage: testenv
