@@ -14,6 +14,6 @@ jobs:
       - run: git clone https://github.com/defau1t17/devops-hometasks.git
       - run: docker build -t $IMAGE_NAME:latest . -f devops-hometasks/07-docker/Dockerfile.multi
       - run: export CR_PAT=${{ secrets.ACTION_TOKEN_SECOND }}
-      - run: echo $CR_PAT | docker login ghcr.io -u ${{ github.repository_owner }}  --password-stdin
+      - run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }}  --password-stdin
       - run: docker push ghcr.io/${{ github.repository_owner }}/${IMAGE_NAME}:latest
           
