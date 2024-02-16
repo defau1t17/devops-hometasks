@@ -5,5 +5,8 @@ on:
   
 jobs:
   test:
+    name: Say Hello world
+    runs-on: ubuntu-18.04
     steps:
-      - run: echo 'Hello World'
+      - name: Pring 
+        run: echo 'Hello World'
