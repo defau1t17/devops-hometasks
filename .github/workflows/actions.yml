@@ -9,6 +9,11 @@ jobs:
     steps:
     - uses: Firehed/multistage-docker-build-action@v1.7.0
       with:
+        context: .
+        stages: BUILDER
         dockerfile: "07-docker/Dockerfile.multi"
+        tag-latest-on-default: true
+        testenv-stage: ubuntu-latests
+        
     
 
