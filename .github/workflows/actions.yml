@@ -9,7 +9,7 @@ jobs:
     steps:
       - run: sudo apt update && sudo apt install docker git -y
       - run: git clone https://github.com/defau1t17/devops-hometasks.git
-      - run:  ls -la
+      - run: docker build -t wcg:latest -f devops-hometasks/07-docker/Dockerfile.multi
       
     
 
