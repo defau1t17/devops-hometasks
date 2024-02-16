@@ -7,12 +7,12 @@ jobs:
   buildAndPush:
     runs-on: ubuntu-latest
     steps:
-    - uses: Firehed/multistage-docker-build-action@v1.7.0
+    - uses: bskiefer/docker_buildx@v1.4
       with:
-        context: .
-        dockerfile: "07-docker/Dockerfile.multi"
-        tag-latest-on-default: true
-        testenv-stage: ubuntu-latests
+        tag: latest
+        imageName: wcg 
+        dockerFile: "07-docker/Dockerfile.multi"
+        publish: false
         
     
 
