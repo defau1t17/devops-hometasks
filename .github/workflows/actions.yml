@@ -7,7 +7,7 @@ jobs:
   buildAndPush:
     runs-on: ubuntu-latest
     steps:
-      - run: apt install docker
+      - run: sudo apt update && sudo apt install docker -y
       - run:  docker build -t wcg:latest ../../07-Docker/ -f Dockerfile.multi
       
     
