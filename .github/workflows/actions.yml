@@ -2,19 +2,17 @@ name: Deploy a Docker.multi Container
 run-name: Docker.multi
 on:
   workflow_dispatch
-
 env:
   IMAGE_NAME: wcg
-  GITHUB_SHA: latest 
 jobs:
   buildAndPush:
     runs-on: ubuntu-latest
     steps:
       - run: sudo apt update && sudo apt install docker git -y
       - run: git clone https://github.com/defau1t17/devops-hometasks.git
-      - run: docker build -t $IMAGE_NAME:latest -t $IMAGE_NAME:${{github.sha}} . -f devops-hometasks/07-docker/Dockerfile.multi
+      - run: docker build -t $IMAGE_NAME:latest -t $IMAGE_NAME:${{ github.sha }} . -f devops-hometasks/07-docker/Dockerfile.multi
       - run: export CR_PAT=${{ secrets.ACTION_TOKEN_SECOND }}
-      - run: echo ${{ secrets.TEST_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }}  --password-stdin
+      - run: echo ${{ secrets.ACTION_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }}  --password-stdin
       - run: docker image list 
-      - run: docker push ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:latest
+      - run: docker push ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:${{ github.sha }}
           
