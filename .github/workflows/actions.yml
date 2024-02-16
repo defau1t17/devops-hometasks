@@ -17,6 +17,7 @@ jobs:
       # - run: echo $CR_PAT | docker login ghcr.io -u defau1t17 --password-stdin
       - run: echo 'default ' ${{ github.repository_owner }} 
       - run: echo 'env ' $IMAGE_NAME ' & ' $env.GITHUB_SHA 
-      - run: echo 'print secret' ${{secrets.ACTION_TOKEN}}
+      - run: echo 'print secretx2' ${{ secrets.ACTION_TOKEN_SECOND }}
+      
       # - run: docker push ghcr.io/${{ github.repository_owner }}/${IMAGE_NAME}:latest
           
