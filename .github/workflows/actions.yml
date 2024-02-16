@@ -7,9 +7,11 @@ jobs:
   buildAndPush:
     runs-on: ubuntu-latest
     steps:
-      - run: sudo apt update && sudo apt install docker git -y
-      - run: git clone https://github.com/defau1t17/devops-hometasks.git
-      - run: docker build -t wcg:latest . -f devops-hometasks/07-docker/Dockerfile.multi
-      
-    
-
+      - uses: Firehed/multistage-docker-build-action@v1.7.0
+        with:
+          file:  "07-docker/Dockerfile.multi"
+          tags: wcg:latest
+          load: true
+          push: false
+          platforms: ghcr.io
+          
