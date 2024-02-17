@@ -14,5 +14,5 @@ jobs:
       - run: export CR_PAT=${{ secrets.ACTION_TOKEN_SECOND }}
       - run: echo ${{ secrets.ACTION_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }}  --password-stdin
       - run: docker tag ${{env.IMAGE_NAME}}:latest ${{ github.repository_owner }}/${{env.IMAGE_NAME}}
-      - run: docker push ghcr.io/${{ github.repository_owner }}/${{env.IMAGE_NAME}}
+      - run: docker image push ghcr.io/${{ github.repository_owner }}/${{env.IMAGE_NAME}}
           
