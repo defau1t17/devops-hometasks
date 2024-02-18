@@ -14,5 +14,6 @@ jobs:
       - run: docker build -t $IMAGE_NAME:latest -t $IMAGE_NAME:${{ github.sha }} . -f devops-hometasks/07-docker/Dockerfile.multi
       - run: echo ${{ secrets.ACTION_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
       - run: docker tag ${{env.IMAGE_NAME}}:latest ${{env.RESOURSE}}/${{ github.repository_owner }}/${{env.IMAGE_NAME}}:latest
+      - run: docker tag ${{env.IMAGE_NAME}}:${{ github.sha }} ${{env.RESOURSE}}/${{ github.repository_owner }}/${{env.IMAGE_NAME}}:${{ github.sha }}
       - run: docker image push ${{env.RESOURSE}}/${{ github.repository_owner }}/${{env.IMAGE_NAME}}:latest
-          
+      - run: docker image push ${{env.RESOURSE}}/${{ github.repository_owner }}/${{env.IMAGE_NAME}}:${{ github.sha }}
