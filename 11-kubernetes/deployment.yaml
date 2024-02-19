@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: word-cloud-deployment
+spec:
+  selector:
+    matchLabels:
+      wc-container: word-cloud-container
+  template:
+    metadata:
+      labels:
+        wc-container: word-cloud-container
+    spec:
+      containers:
+      - name: wcg-container
+        image: ghcr.io/defau1t17/wcg:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8888
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: word-cloud-serivce
+spec:
+  type: LoadBalancer
+  selector:
+    wc-container: word-cloud-container
+  ports:
+  - port: 80
+    targetPort: 8888
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: word-cloud-ingress
+  labels:
+    wcg-ingress: ingress
+spec:
+  rules:
+  - host: word-cloud-generator.com 
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: word-cloud-serivce
+            port: 
+              number: 8888
