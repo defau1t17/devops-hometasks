@@ -10,7 +10,7 @@ pipeline{
         get_wordcloud_script_text="""
             sudo service wordcloud stop 
             sudo chmod 777 /opt/word-cloud-generator/ 
-            curl -X GET http://$NEXUS_HOST_IP:8081/repository/word-cloud-build/1/word-cloud-generator/"$BUILD_NUMBER"/word-cloud-generator-"$BUILD_NUMBER".gz -o /opt/word-cloud-generator/word-cloud-generator.gz  -u "$NEXUS_CREDENTIALS_USR:$NEXUS_CREDENTIALS_PSW" 
+            curl -X GET http://$NEXUS_HOST_IP:8081/repository/word-cloud-app/1/word-cloud-generator/"$BUILD_NUMBER"/word-cloud-generator-"$BUILD_NUMBER".gz -o /opt/word-cloud-generator/word-cloud-generator.gz  -u "$NEXUS_CREDENTIALS_USR:$NEXUS_CREDENTIALS_PSW" 
             sudo gunzip -f /opt/word-cloud-generator/word-cloud-generator.gz
             sudo chmod +x /opt/word-cloud-generator/word-cloud-generator
             sudo service wordcloud start
@@ -51,10 +51,10 @@ pipeline{
                     type: 'gz']], 
                     credentialsId: 'nexus-creds',
                     groupId: '1',
-                    nexusUrl: "${Env:NEXUS_HOST_IP}:8081/", 
+                    nexusUrl: "${Env:NEXUS_HOST_IP}:8081", 
                     nexusVersion: 'nexus3',
                     protocol: 'http', 
-                    repository: 'word-cloud-build', 
+                    repository: 'word-cloud-app', 
                     version: '$BUILD_NUMBER'
                     )
             }
