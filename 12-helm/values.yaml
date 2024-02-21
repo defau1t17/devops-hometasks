@@ -1,0 +1,14 @@
+wordCloudImageVersion:
+  imageVersion: latest
+
+wordCloudImage:
+  image: ghcr.io/defau1t17/wcg
+
+wordCloudServiceHostName:
+  hostName: word-cloud-generator.com 
+
+wordCloudServiceContainerPort:
+  port: 8888
+
+kuberServicePort:
+  port: 80

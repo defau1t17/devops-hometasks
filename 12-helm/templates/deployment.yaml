@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: word-cloud-deployment
+spec:
+  selector:
+    matchLabels:
+      wc-container: word-cloud-container
+  template:
+    metadata:
+      labels:
+        wc-container: word-cloud-container
+    spec:
+      containers:
+      - name: wcg-container
+        image: {{ .Values.wordCloudImage.image }}:{{ .Values.wordCloudImageVersion.imageVersion }}
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: {{ .Values.wordCloudServiceContainerPort.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: word-cloud-serivce
+spec:
+  type: LoadBalancer
+  selector:
+    wc-container: word-cloud-container
+  ports:
+  - port: {{ .Values.kuberServicePort.port }}
+    targetPort: {{ .Values.wordCloudServiceContainerPort.port }}
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: word-cloud-ingress
+  labels:
+    wcg-ingress: ingress
+spec:
+  rules:
+  - host: {{ .Values.wordCloudServiceHostName.hostName }}
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: word-cloud-serivce
+            port: 
+              number: {{ .Values.wordCloudServiceContainerPort.port }}
