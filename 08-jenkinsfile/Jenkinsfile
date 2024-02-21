@@ -9,11 +9,10 @@ pipeline{
         REMOTE_HOSTS_CREDS=credentials('remote-hosts')
         get_wordcloud_script_text="""
             sudo service wordcloud stop 
-            sudo mkdir /opt/wordcloud/ 
-            sudo chmod 777 /opt/wordcloud/ 
-            curl -X GET http://$NEXUS_HOST_IP:8081/repository/word-cloud-build/1/word-cloud-generator/"$BUILD_NUMBER"/word-cloud-generator-"$BUILD_NUMBER".gz -o /opt/wordcloud/word-cloud-generator.gz  -u "$NEXUS_CREDENTIALS_USR:$NEXUS_CREDENTIALS_PSW" 
-            sudo gunzip -f /opt/wordcloud/word-cloud-generator.gz
-            sudo chmod +x /opt/wordcloud/word-cloud-generator
+            sudo chmod 777 /opt/word-cloud-generator/ 
+            curl -X GET http://$NEXUS_HOST_IP:8081/repository/word-cloud-build/1/word-cloud-generator/"$BUILD_NUMBER"/word-cloud-generator-"$BUILD_NUMBER".gz -o /opt/word-cloud-generator/word-cloud-generator.gz  -u "$NEXUS_CREDENTIALS_USR:$NEXUS_CREDENTIALS_PSW" 
+            sudo gunzip -f /opt/word-cloud-generator/word-cloud-generator.gz
+            sudo chmod +x /opt/word-cloud-generator/word-cloud-generator
             sudo service wordcloud start
         """
     }
