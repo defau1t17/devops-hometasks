@@ -1,116 +1,116 @@
-pipeline{
+pipeline {
     agent any
-    environment{
-        REMOETE_REPOSITORY_URL= "https://github.com/defau1t17/word-cloud-generator"
-        STAGING_HOST_IP="192.168.59.80"
-        NEXUS_HOST_IP="192.168.59.90"
-        PRODUCTION_HOST_IP="192.168.59.85"
-        NEXUS_CREDENTIALS=credentials('nexus-creds')
-        REMOTE_HOSTS_CREDS=credentials('remote-hosts')
-        get_wordcloud_script_text="""
+    environment {
+        REMOTE_REPOSITORY_URL = "https://github.com/defau1t17/word-cloud-generator"
+        STAGING_HOST_IP = "192.168.59.80"
+        NEXUS_HOST_IP = "192.168.59.90"
+        PRODUCTION_HOST_IP = "192.168.59.85"
+        NEXUS_CREDENTIALS = credentials('nexus-creds')
+        REMOTE_HOSTS_CREDS = credentials('remote-hosts')
+        get_wordcloud_script_text = """
             sudo service wordcloud stop 
-            curl -X GET http://$NEXUS_HOST_IP:8081/repository/word-cloud-app/1/word-cloud-generator/"$BUILD_NUMBER"/word-cloud-generator-"$BUILD_NUMBER".gz -o /opt/word-cloud-generator.gz  -u "$NEXUS_CREDENTIALS_USR:$NEXUS_CREDENTIALS_PSW" 
+            curl -X GET http://${NEXUS_HOST_IP}:8081/repository/word-cloud-app/1/word-cloud-generator/${BUILD_NUMBER}/word-cloud-generator-${BUILD_NUMBER}.gz -o /opt/word-cloud-generator.gz -u "${NEXUS_CREDENTIALS_USR}:${NEXUS_CREDENTIALS_PSW}" 
             sudo gunzip -f /opt/word-cloud-generator.gz
             sudo chmod +x /opt/word-cloud-generator
             sudo service wordcloud start
         """
     }
-    tools{
+    tools {
         go 'go_lang'
     }
-    stages{
-        stage("download remote repository"){
-            steps{
-                git "$REMOETE_REPOSITORY_URL"
+    stages {
+        stage("download remote repository") {
+            steps {
+                git "${REMOTE_REPOSITORY_URL}"
             }
         }
-        stage("test porject locally"){
-            steps{
+        stage("test project locally") {
+            steps {
                 sh '''
                     make lint 
                     make test
                     '''
             }
         }
-        stage("build project"){
-            steps{
+        stage("build project") {
+            steps {
                 sh '''
-                    sed -i "s/1.DEVELOPMENT/1.$BUILD_NUMBER/g" static/version
-                    GOOS=linux GOARCH=amd64 go build -o ./artifacts/word-cloud-generator-$BUILD_NUMBER  
-                    gzip artifacts/word-cloud-generator-$BUILD_NUMBER
+                    sed -i "s/1.DEVELOPMENT/1.${BUILD_NUMBER}/g" static/version
+                    GOOS=linux GOARCH=amd64 go build -o ./artifacts/word-cloud-generator-${BUILD_NUMBER}
+                    gzip artifacts/word-cloud-generator-${BUILD_NUMBER}
                     '''
             }
         }
-        stage("upload artifacts"){
-            steps{
-                nexusArtifactUploader (artifacts: 
-                    [[artifactId: 'word-cloud-generator', 
-                    classifier: '', 
-                    file: 'artifacts/word-cloud-generator-$BUILD_NUMBER.gz',
-                    type: 'gz']], 
+        stage("upload artifacts") {
+            steps {
+                nexusArtifactUploader(
+                    artifacts: [
+                        [artifactId: 'word-cloud-generator',
+                         classifier: '',
+                         file: "artifacts/word-cloud-generator-${BUILD_NUMBER}.gz",
+                         type: 'gz']
+                    ],
                     credentialsId: 'nexus-creds',
                     groupId: '1',
-                    nexusUrl: "${Env:NEXUS_HOST_IP}:8081", 
+                    nexusUrl: "${Env:NEXUS_HOST_IP}:8081",
                     nexusVersion: 'nexus3',
-                    protocol: 'http', 
-                    repository: 'word-cloud-app', 
-                    version: '$BUILD_NUMBER'
-                    )
+                    protocol: 'http',
+                    repository: 'word-cloud-app',
+                    version: "${BUILD_NUMBER}"
+                )
             }
         }
-        stage("download artifact at staging server"){
-            steps{
+        stage("download artifact at staging server") {
+            steps {
                 script {
                     def remote = [:]
                     remote.name = 'test'
-                    remote.host = "$STAGING_HOST_IP"
-                    remote.user = "$REMOTE_HOSTS_CREDS_USR"
-                    remote.password = "$REMOTE_HOSTS_CREDS_PSW"
+                    remote.host = "${STAGING_HOST_IP}"
+                    remote.user = "${REMOTE_HOSTS_CREDS_USR}"
+                    remote.password = "${REMOTE_HOSTS_CREDS_PSW}"
                     remote.allowAnyHosts = true
-                        writeFile file: 'download.sh', text: "$get_wordcloud_script_text"
-                        sshScript remote: remote, script: "download.sh"
-                }
-            }
-        }
-        stage ('Integration tests'){
-          parallel {
-            stage ('test 1'){
-                steps {
-                  sh '''
-                    res=`curl -s -H "Content-Type: application/json" -d '{"text":"ths is a really really really important thing this is"}' http://$STAGING_HOST_IP:8888/api | jq '. | length'`
-                    if [ "7" != "$res" ]; then
-                      exit 99
-                    fi
-                  '''
-                }
-            }
-            stage ('test 2'){
-                steps {
-                  sh '''
-                    res=`curl -s -H "Content-Type: application/json" -d '{"text":"ths is a really really really important thing this is"}' http://$STAGING_HOST_IP:8888/api | jq '. | length'`
-                    if [ "7" != "$res" ]; then
-                      exit 99
-                    fi
-                  '''
-                }
-            }
-          }
-        }
-        post{
-            success{
-                steps{
-                    script {
-                    def remote = [:]
-                    remote.name = 'test'
-                    remote.host = "$PRODUCTION_HOST_IP"
-                    remote.user = "$REMOTE_HOSTS_CREDS_USR"
-                    remote.password = "$REMOTE_HOSTS_CREDS_PSW"
-                    remote.allowAnyHosts = true
-                    writeFile file: 'download.sh', text: "$get_wordcloud_script_text"
+                    writeFile file: 'download.sh', text: "${get_wordcloud_script_text}"
                     sshScript remote: remote, script: "download.sh"
+                }
+            }
+        }
+        stage('Integration tests') {
+            parallel {
+                stage('test 1') {
+                    steps {
+                        sh '''
+                            res=$(curl -s -H "Content-Type: application/json" -d '{"text":"ths is a really really really important thing this is"}' http://${STAGING_HOST_IP}:8888/api | jq '. | length')
+                            if [ "7" != "${res}" ]; then
+                                exit 99
+                            fi
+                        '''
+                    }
+                }
+                stage('test 2') {
+                    steps {
+                        sh '''
+                            res=$(curl -s -H "Content-Type: application/json" -d '{"text":"ths is a really really really important thing this is"}' http://${STAGING_HOST_IP}:8888/api | jq '. | length')
+                            if [ "7" != "${res}" ]; then
+                                exit 99
+                            fi
+                        '''
                     }
                 }
             }
         }
-    } 
+    }
+    post {
+        success {
+            script {
+                def remote = [:]
+                remote.name = 'test'
+                remote.host = "${PRODUCTION_HOST_IP}"
+                remote.user = "${REMOTE_HOSTS_CREDS_USR}"
+                remote.password = "${REMOTE_HOSTS_CREDS_PSW}"
+                remote.allowAnyHosts = true
+                writeFile file: 'download.sh', text: "${get_wordcloud_script_text}"
+                sshScript remote: remote, script: "download.sh"
+            }
+        }
+    }
 }
