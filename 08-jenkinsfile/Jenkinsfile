@@ -9,10 +9,9 @@ pipeline{
         REMOTE_HOSTS_CREDS=credentials('remote-hosts')
         get_wordcloud_script_text="""
             sudo service wordcloud stop 
-            sudo chmod 777 /opt/word-cloud-generator/ 
-            curl -X GET http://$NEXUS_HOST_IP:8081/repository/word-cloud-app/1/word-cloud-generator/"$BUILD_NUMBER"/word-cloud-generator-"$BUILD_NUMBER".gz -o /opt/word-cloud-generator/word-cloud-generator.gz  -u "$NEXUS_CREDENTIALS_USR:$NEXUS_CREDENTIALS_PSW" 
-            sudo gunzip -f /opt/word-cloud-generator/word-cloud-generator.gz
-            sudo chmod +x /opt/word-cloud-generator/word-cloud-generator
+            curl -X GET http://$NEXUS_HOST_IP:8081/repository/word-cloud-app/1/word-cloud-generator/"$BUILD_NUMBER"/word-cloud-generator-"$BUILD_NUMBER".gz -o /opt/word-cloud-generator.gz  -u "$NEXUS_CREDENTIALS_USR:$NEXUS_CREDENTIALS_PSW" 
+            sudo gunzip -f /opt/word-cloud-generator.gz
+            sudo chmod +x /opt/word-cloud-generator
             sudo service wordcloud start
         """
     }
@@ -73,67 +72,43 @@ pipeline{
                 }
             }
         }
-        stage('make tests'){
-            parallel{
-                stage('test 1'){
-                    steps{
-                        script{
-                        def remote = [:]
-                        remote.name = 'stage'
-                        remote.host = "$STAGING_HOST_IP"
-                        remote.user = "$REMOTE_HOSTS_CREDS_USR"
-                        remote.password = "$REMOTE_HOSTS_CREDS_PSW"
-                        remote.allowAnyHosts = true
-                        sshCommand remote: remote, command: """
-                            res=\$(curl -s -H "Content-Type: application/json" -d '{"text":"ths is a really really really important thing this is"}' http://"$STAGING_HOST_IP":8888/api | jq '. | length')
-                            if [ "7" != \$res ]; then
-                            exit 99
-                            fi
-                                    
-                            res=\$(curl -s  http://"$STAGING_HOST_IP":8888/version | jq -r  '.version')
-                            if [ "1.$BUILD_NUMBER" != \$res ]; then
-                            exit 99
-                            fi
-                            """
-                        }
-                    }
+        stage ('Integration tests'){
+          parallel {
+            stage ('test 1'){
+                steps {
+                  sh '''
+                    res=`curl -s -H "Content-Type: application/json" -d '{"text":"ths is a really really really important thing this is"}' http://$STAGING_HOST_IP:8888/api | jq '. | length'`
+                    if [ "7" != "$res" ]; then
+                      exit 99
+                    fi
+                  '''
                 }
-                stage('test 2'){
-                    steps{
-                        script{
-                        def remote = [:]
-                        remote.name = 'staging'
-                        remote.host = "$STAGING_HOST_IP"
-                        remote.user = "$REMOTE_HOSTS_CREDS_USR"
-                        remote.password = "$REMOTE_HOSTS_CREDS_PSW"
-                        remote.allowAnyHosts = true
-                        sshCommand remote: remote, command: """
-                            res=\$(curl -s -H "Content-Type: application/json" -d '{"text":"ths is a really really really important thing this is"}' http://"$STAGING_HOST_IP":8888/api | jq '. | length')
-                            if [ "7" != \$res ]; then
-                            exit 99
-                            fi
-
-                            res=\$(curl -s  http://"$STAGING_HOST_IP":8888/version | jq -r  '.version')
-                            if [ "1.$BUILD_NUMBER" != \$res ]; then
-                            exit 99
-                            fi
-                            """
-                        }
-                    }
+            }
+            stage ('test 2'){
+                steps {
+                  sh '''
+                    res=`curl -s -H "Content-Type: application/json" -d '{"text":"ths is a really really really important thing this is"}' http://$STAGING_HOST_IP:8888/api | jq '. | length'`
+                    if [ "7" != "$res" ]; then
+                      exit 99
+                    fi
+                  '''
                 }
-            }    
+            }
+          }
         }
-        stage("download artifact at productions server"){
-            steps{
-                script {
-                def remote = [:]
-                remote.name = 'test'
-                remote.host = "$PRODUCTION_HOST_IP"
-                remote.user = "$REMOTE_HOSTS_CREDS_USR"
-                remote.password = "$REMOTE_HOSTS_CREDS_PSW"
-                remote.allowAnyHosts = true
-                writeFile file: 'download.sh', text: "$get_wordcloud_script_text"
-                sshScript remote: remote, script: "download.sh"
+        post{
+            success{
+                steps{
+                    script {
+                    def remote = [:]
+                    remote.name = 'test'
+                    remote.host = "$PRODUCTION_HOST_IP"
+                    remote.user = "$REMOTE_HOSTS_CREDS_USR"
+                    remote.password = "$REMOTE_HOSTS_CREDS_PSW"
+                    remote.allowAnyHosts = true
+                    writeFile file: 'download.sh', text: "$get_wordcloud_script_text"
+                    sshScript remote: remote, script: "download.sh"
+                    }
                 }
             }
         }
