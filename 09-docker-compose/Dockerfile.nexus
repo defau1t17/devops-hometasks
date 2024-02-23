@@ -10,6 +10,6 @@ COPY config/*.yaml .
 
 RUN ansible-galaxy install -n -p /opt/ansible -r requirements.yaml --ignore-errors && ansible-playbook nexus.yaml 
 
-EXPOSE 8081
+EXPOSE 81
 
 CMD sleep 5 && service nexus start && tail -f /dev/null

@@ -13,6 +13,6 @@ ENV JAVA_OPTS -Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -D
 WORKDIR ${JENKINS_HOME}/jobs/MainPipeline
 COPY files/*.xml .
 
-EXPOSE 8080
+EXPOSE 80
 
 
