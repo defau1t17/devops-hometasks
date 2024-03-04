@@ -5,7 +5,7 @@ on:
 env:
   IMAGE_NAME: wcg
   RESOURSE: ghcr.io
-  VERSION_TAG: 0.0.1
+  VERSION_TAG: "v1.0.${{ github.run_number }}"
 jobs:
   buildAndPush:
     runs-on: ubuntu-latest
@@ -24,7 +24,8 @@ jobs:
       - run: docker image push ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{env.IMAGE_NAME}}:${{ env.VERSION_TAG }}
       - name: Bump version and push tag
       - name: tag branch
-        run: git tag ${{ env.VERSION_TAG }}
+        run: | 
+          git tag ${{ env.VERSION_TAG }}
       - run: helm lint 12-helm/ 
       - name: Replace version
         run: |
