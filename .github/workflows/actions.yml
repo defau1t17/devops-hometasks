@@ -22,7 +22,6 @@ jobs:
       - run: echo ${{ secrets.ACTION_TOKEN }} | docker login ghcr.io -u ${{ steps.string.outputs.lowercase }} --password-stdin
       - run: docker tag ${{env.IMAGE_NAME}}:${{ env.VERSION_TAG }} ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{env.IMAGE_NAME}}:${{ env.VERSION_TAG }}
       - run: docker image push ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{env.IMAGE_NAME}}:${{ env.VERSION_TAG }}
-      - name: Bump version and push tag
       - name: tag branch
         run: | 
           git tag ${{ env.VERSION_TAG }}
