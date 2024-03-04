@@ -25,7 +25,7 @@ jobs:
       - run: docker tag ${{env.IMAGE_NAME}}:${{ env.VERSION_TAG }} ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{env.IMAGE_NAME}}:${{ env.VERSION_TAG }}
       - run: docker image push ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{env.IMAGE_NAME}}:latest
       - run: docker image push ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{env.IMAGE_NAME}}:${{ github.sha }}
-      - run: docker image push ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{ env.VERSION_TAG }}
+      - run: docker image push ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{env.IMAGE_NAME}}:${{ env.VERSION_TAG }}
       - name: Bump version and push tag
         uses: laputansoft/github-tag-action@v4.6
         with:
