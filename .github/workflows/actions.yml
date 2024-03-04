@@ -13,11 +13,25 @@ jobs:
         uses: ASzc/change-string-case-action@v6
         with:
           string: ${{ github.repository_owner }}
-      - run: sudo apt update && sudo apt install docker git -y
+      - run: curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null ; sudo apt-get install apt-transport-https -y
+      - run: echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list;
+      - run: sudo apt update && sudo apt install docker git helm -y
       - run: git clone https://github.com/defau1t17/devops-hometasks.git
-      - run: docker build -t $IMAGE_NAME:latest -t $IMAGE_NAME:${{ github.sha }} . -f devops-hometasks/07-docker/Dockerfile.multi
+      - run: docker build -t $IMAGE_NAME:latest -t $IMAGE_NAME:${{ github.sha }} -t $IMAGE_NAME:${{ steps.package-version.outputs.version }} . -f devops-hometasks/07-docker/Dockerfile.multi
       - run: echo ${{ secrets.ACTION_TOKEN }} | docker login ghcr.io -u ${{ steps.string.outputs.lowercase }} --password-stdin
       - run: docker tag ${{env.IMAGE_NAME}}:latest ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{env.IMAGE_NAME}}:latest
-      - run: docker tag ${{env.IMAGE_NAME}}:${{ github.sha }} ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{env.IMAGE_NAME}}:${{ github.sha }}
+      - run: docker tag ${{env.IMAGE_NAME}}:latest ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{env.IMAGE_NAME}}:latest
+      - run: docker tag ${{env.IMAGE_NAME}}:${{ steps.package-version.outputs.version }} ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{env.IMAGE_NAME}}:${{ steps.package-version.outputs.version }}
       - run: docker image push ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{env.IMAGE_NAME}}:latest
       - run: docker image push ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{env.IMAGE_NAME}}:${{ github.sha }}
+      - run: docker image push ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{ steps.package-version.outputs.version }}
+      - name: Bump version and push tag
+        uses: laputansoft/github-tag-action@v4.6
+        with:
+          github_token: ${{ env.ACTION_TOKEN }}
+          tag: ${{ steps.package-version.outputs.version }}
+          release_branches: main
+      - run: helm lint 12-helm/ 
+      - run: sed -E -i 's/imageVersion: .+/imageVersion: ${{ steps.package-version.outputs.version }}/' 12-helm/values.yaml 
+      - run: helm package 12 ; mv *.tgz docs/ ; helm repo index docs --url https://${{ steps.string.outputs.lowercase }}.github.io/devops-hometasks/
+      - run: git add -i ; git commit -av ; git push origin main ;
