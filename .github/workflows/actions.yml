@@ -26,8 +26,8 @@ jobs:
         uses: laputansoft/github-tag-action@v4.6
         with:
           github_token: ${{ secrets.ACTION_TOKEN }}
-          tag: ${{ env.VERSION_TAG }}
           release_branches: main
+          custom_tag : ${{ env.VERSION_TAG }}
       - run: helm lint 12-helm/ 
       - name: Replace version
         run: |
