@@ -29,6 +29,7 @@ jobs:
           git tag ${{ env.VERSION_TAG }}
           git config --global user.name "${{ steps.string.outputs.lowercase }}"
           git config --global user.email "${{ secrets.EMAIL_ADDRESS }}"
+          git remote set-url origin https://${{ steps.string.outputs.lowercase }}:${{ secrets.ACTION_TOKEN }}@github.com/${{ github.repository }}
       - run: helm lint 12-helm/ 
       - name: Replace version
         run: |
