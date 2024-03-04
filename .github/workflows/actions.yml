@@ -25,7 +25,7 @@ jobs:
       - name: Bump version and push tag
         uses: laputansoft/github-tag-action@v4.6
         with:
-          github_token: ${{ env.ACTION_TOKEN }}
+          github_token: ${{ secrets.ACTION_TOKEN }}
           tag: ${{ env.VERSION_TAG }}
           release_branches: main
       - run: helm lint 12-helm/ 
