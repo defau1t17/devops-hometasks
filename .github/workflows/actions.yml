@@ -18,13 +18,9 @@ jobs:
       - run: echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list;
       - run: sudo apt update && sudo apt install docker git helm -y
       - run: git clone https://github.com/defau1t17/devops-hometasks.git
-      - run: docker build -t $IMAGE_NAME:latest -t $IMAGE_NAME:${{ github.sha }} -t $IMAGE_NAME:${{ env.VERSION_TAG }} . -f devops-hometasks/07-docker/Dockerfile.multi
+      - run: docker build -t $IMAGE_NAME:${{ env.VERSION_TAG }} . -f devops-hometasks/07-docker/Dockerfile.multi
       - run: echo ${{ secrets.ACTION_TOKEN }} | docker login ghcr.io -u ${{ steps.string.outputs.lowercase }} --password-stdin
-      - run: docker tag ${{env.IMAGE_NAME}}:latest ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{env.IMAGE_NAME}}:latest
-      - run: docker tag ${{env.IMAGE_NAME}}:latest ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{env.IMAGE_NAME}}:latest
       - run: docker tag ${{env.IMAGE_NAME}}:${{ env.VERSION_TAG }} ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{env.IMAGE_NAME}}:${{ env.VERSION_TAG }}
-      - run: docker image push ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{env.IMAGE_NAME}}:latest
-      - run: docker image push ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{env.IMAGE_NAME}}:${{ github.sha }}
       - run: docker image push ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{env.IMAGE_NAME}}:${{ env.VERSION_TAG }}
       - name: Bump version and push tag
         uses: laputansoft/github-tag-action@v4.6
