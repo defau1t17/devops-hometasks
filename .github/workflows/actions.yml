@@ -23,14 +23,11 @@ jobs:
       - run: docker tag ${{env.IMAGE_NAME}}:${{ env.VERSION_TAG }} ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{env.IMAGE_NAME}}:${{ env.VERSION_TAG }}
       - run: docker image push ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{env.IMAGE_NAME}}:${{ env.VERSION_TAG }}
       - name: Bump version and push tag
-        uses: laputansoft/github-tag-action@v4.6
-        with:
-          github_token: ${{ secrets.ACTION_TOKEN }}
-          release_branches: main
-          custom_tag : ${{ env.VERSION_TAG }}
+      - name: tag branch
+        run: git tag ${{ env.VERSION_TAG }}
       - run: helm lint 12-helm/ 
       - name: Replace version
         run: |
           sed -i 's/imageVersion: .*/imageVersion: ${{ env.VERSION_TAG }}/' 12-helm/values.yaml
       - run: helm package 12 ; mv *.tgz docs/ ; helm repo index docs --url https://${{ steps.string.outputs.lowercase }}.github.io/devops-hometasks/
-      - run: git add -i ; git commit -av ; git push origin main ;
+      - run: git add -i ; git commit -av ; git push origin main ${{ env.VERSION_TAG }};
