@@ -32,6 +32,11 @@ jobs:
           tag: ${{ steps.package-version.outputs.version }}
           release_branches: main
       - run: helm lint 12-helm/ 
-      - run: sed -E -i 's/imageVersion: .+/imageVersion: ${{ steps.package-version.outputs.version }}/' 12-helm/values.yaml 
+      - name: Replace version
+        uses: richardrigutins/replace-in-files@v2
+        with:
+          files: '12-helm/values.yaml'
+          search-text: 'imageVersion: .+'
+          replacement-text: 'imageVersion: ${{ steps.package-version.outputs.version }}'
       - run: helm package 12 ; mv *.tgz docs/ ; helm repo index docs --url https://${{ steps.string.outputs.lowercase }}.github.io/devops-hometasks/
       - run: git add -i ; git commit -av ; git push origin main ;
