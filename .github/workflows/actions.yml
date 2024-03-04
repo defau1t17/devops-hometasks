@@ -22,7 +22,7 @@ jobs:
       - run: echo ${{ secrets.ACTION_TOKEN }} | docker login ghcr.io -u ${{ steps.string.outputs.lowercase }} --password-stdin
       - run: docker tag ${{env.IMAGE_NAME}}:latest ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{env.IMAGE_NAME}}:latest
       - run: docker tag ${{env.IMAGE_NAME}}:latest ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{env.IMAGE_NAME}}:latest
-      - run: docker tag ${{env.IMAGE_NAME}}:${{ steps.package-version.outputs.version }} ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{env.IMAGE_NAME}}:${{ env.VERSION_TAG }}
+      - run: docker tag ${{env.IMAGE_NAME}}:${{ env.VERSION_TAG }} ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{env.IMAGE_NAME}}:${{ env.VERSION_TAG }}
       - run: docker image push ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{env.IMAGE_NAME}}:latest
       - run: docker image push ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{env.IMAGE_NAME}}:${{ github.sha }}
       - run: docker image push ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{ env.VERSION_TAG }}
