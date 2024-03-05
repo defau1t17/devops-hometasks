@@ -24,6 +24,8 @@ jobs:
       - run: docker image push ${{env.RESOURSE}}/${{ steps.string.outputs.lowercase }}/${{env.IMAGE_NAME}}:${{ env.VERSION_TAG }}
       - name: Checkout repository
         uses: actions/checkout@v4.1.1
+        with: 
+          token: ${{ secrets.ACTION_TOKEN }}
       - name: tag branch
         run: | 
           git tag ${{ env.VERSION_TAG }}
