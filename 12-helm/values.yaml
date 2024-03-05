@@ -1,5 +1,5 @@
 wordCloudImageVersion:
-  imageVersion: v1.0.70
+  imageVersion: v1.0.71
 
 wordCloudImage:
   image: ghcr.io/defau1t17/wcg
