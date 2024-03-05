@@ -3,7 +3,7 @@ entries:
   Word-Cloud-Generator-Helm-Chart:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2024-03-05T04:52:57.673555283Z"
+    created: "2024-03-05T15:10:07.277899396Z"
     description: Helm chart for deploying Word-Cloud-Generator service
     digest: 5c881b60f8d99d79a8b0d12cf5f07fb668a1784a94db82b830c5836993fede90
     name: Word-Cloud-Generator-Helm-Chart
@@ -11,4 +11,15 @@ entries:
     urls:
     - https://defau1t17.github.io/devops-hometasks/Word-Cloud-Generator-Helm-Chart-0.1.0.tgz
     version: 0.1.0
-generated: "2024-03-05T04:52:57.673263598Z"
+  wordcloudchart:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2024-03-05T15:10:07.278062488Z"
+    description: Helm chart for deploying Word-Cloud-Generator service
+    digest: 1f190cebeb93e2f7423365d25189f0af8b652864f6caee78cc2683b5885e42e0
+    name: wordcloudchart
+    type: application
+    urls:
+    - https://defau1t17.github.io/devops-hometasks/wordcloudchart-1.0.0.tgz
+    version: 1.0.0
+generated: "2024-03-05T15:10:07.277610681Z"
