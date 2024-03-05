@@ -36,4 +36,4 @@ jobs:
         run: |
           sed -i 's/imageVersion: .*/imageVersion: ${{ env.VERSION_TAG }}/' 12-helm/values.yaml
       - run: helm package 12-helm/ ; mv *.tgz docs/ ; helm repo index docs --url https://${{ steps.string.outputs.lowercase }}.github.io/devops-hometasks/
-      - run: git add -i ; git commit -a -m "Image and helm chart updated to ${{ env.VERSION_TAG }} version"; git push origin main ${{ env.VERSION_TAG }};
+      - run: git add . ; git commit -m "Image and helm chart updated to ${{ env.VERSION_TAG }} version"; git push origin main ${{ env.VERSION_TAG }};
