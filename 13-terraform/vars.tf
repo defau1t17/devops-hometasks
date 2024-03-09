@@ -43,9 +43,20 @@ variable "wordcloud-ingress-name" {
   type        = string
   default     = "word-cloud-ingress"
 }
-
+variable "github-owner" {
+  type = string
+  default = "defau1t17"
+}
 variable "wordcloud-hostname" {
   description = "Special variable for ingress hostname"
   type        = string
   default     = "word-cloud-generator.com"
+}
+variable "github-branch" {
+  type = string
+  default = "main"
+}
+variable "github-repository" {
+  type = string
+  default = "devops-hometasks"
 }
