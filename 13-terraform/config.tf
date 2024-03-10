@@ -22,6 +22,6 @@ provider "kubernetes" {
 
 provider "github" {
   owner = var.github-owner
-  token = var.token
+  token = var.github-token
 }
 
