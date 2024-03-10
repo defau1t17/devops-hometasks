@@ -59,7 +59,7 @@ resource "kubernetes_ingress_v1" "ingress-creation-block" {
       http {
         path {
           path_type = "Prefix"
-          path      = "/"
+          # path      = "/"
           backend {
             service {
               name = var.wordcloud-serivce-name
