@@ -38,12 +38,13 @@ resource "kubernetes_service_v1" "service-creation-block" {
 
   }
   spec {
-    # type     = "LoadBalancer"
+    
     selector = { wc-container = "word-cloud-container" }
     port {
       target_port = var.wordcloud-container-port
       port        = var.wordcloud-service-port
     }
+        type = "LoadBalancer"
   }
 }
 
