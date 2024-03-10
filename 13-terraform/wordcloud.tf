@@ -5,7 +5,6 @@ resource "kubernetes_namespace_v1" "namespace-creation-block" {
 }
 
 resource "kubernetes_deployment_v1" "deployment-creation-block" {
-  count = 4
   metadata {
     name      = var.wordcloud-deployment-name
     namespace = var.wordcloud-namespace
@@ -39,7 +38,7 @@ resource "kubernetes_service_v1" "service-creation-block" {
 
   }
   spec {
-    type     = "LoadBalancer"
+    type = "LoadBalancer"
     selector = { wc-container = "word-cloud-container" }
     port {
       target_port = var.wordcloud-container-port
