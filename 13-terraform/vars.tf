@@ -60,3 +60,8 @@ variable "github-repository" {
   type = string
   default = "devops-hometasks"
 }
+
+variable "github-token" {
+  type = string
+  default = ""
+}
